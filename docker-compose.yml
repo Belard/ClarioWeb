@@ -1,0 +1,20 @@
+# Development – hot-reload Vite dev server
+# Usage: docker compose up
+#
+# The source directory is bind-mounted so that file changes on
+# the host are reflected instantly inside the container (HMR).
+
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "5173:5173"
+    volumes:
+      # Bind-mount source for hot module replacement
+      - .:/app
+      # Keep the container's node_modules to avoid host/container conflicts
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development

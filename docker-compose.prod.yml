@@ -1,0 +1,13 @@
+# Production – optimised nginx image serving the compiled React app
+# Usage: docker compose -f docker-compose.prod.yml up --build
+
+services:
+  app:
+    build:
+      context: .
+      target: prod
+    ports:
+      - "80:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
