@@ -1,0 +1,16 @@
+{
+  "sidebar": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "createPost": "Create Post",
+      "history": "History"
+    },
+    "platforms": "Platforms",
+    "action": {
+      "createPost": "Create Post"
+    }
+  },
+  "header": {
+    "defaultSubtitle": "Pediatric Dentist"
+  }
+}

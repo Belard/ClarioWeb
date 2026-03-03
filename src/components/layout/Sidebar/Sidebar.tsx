@@ -16,6 +16,7 @@
  *   />
  */
 import { colors, spacing, shadows } from '@/theme';
+import { useTranslation } from 'react-i18next';
 import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarSection } from './SidebarSection';
 import { SidebarPlatformItem } from './SidebarPlatformItem';
@@ -35,6 +36,8 @@ export function Sidebar({
   actionIcon,
   onActionClick,
 }: SidebarConfig) {
+  const { t } = useTranslation();
+
   return (
     <aside style={styles.aside}>
       {/* ── Scrollable content ────────────────────────────────────────────── */}
@@ -59,7 +62,7 @@ export function Sidebar({
         {/* Platforms */}
         {platforms.length > 0 && (
           <div style={{ padding: `${spacing[4]} ${spacing[2]}` }}>
-            <SidebarSection title="Plataformas">
+            <SidebarSection title={t('sidebar.platforms')}>
                 {platforms.map((p) => (
                 <SidebarPlatformItem
                     key={p.id}

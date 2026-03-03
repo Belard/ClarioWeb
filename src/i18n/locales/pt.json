@@ -1,0 +1,16 @@
+{
+  "sidebar": {
+    "nav": {
+      "dashboard": "Painel",
+      "createPost": "Criar Post",
+      "history": "Histórico"
+    },
+    "platforms": "Plataformas",
+    "action": {
+      "createPost": "Criar Post"
+    }
+  },
+  "header": {
+    "defaultSubtitle": "Odontopediatra"
+  }
+}

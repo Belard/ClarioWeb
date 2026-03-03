@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components';
 import type { SidebarConfig } from '@/components';
 import './App.css';
@@ -9,12 +10,13 @@ import './App.css';
  */
 function useSidebarConfig(): SidebarConfig {
   const [activeNav, setActiveNav] = useState('create-post');
+  const { t } = useTranslation();
 
   return {
     navItems: [
-      { id: 'dashboard',   label: 'Painel',     icon: 'dashboard' },
-      { id: 'create-post', label: 'Criar Post',  icon: 'edit' },
-      { id: 'history',     label: 'Histórico',   icon: 'history' },
+      { id: 'dashboard',   label: t('sidebar.nav.dashboard'),   icon: 'dashboard' },
+      { id: 'create-post', label: t('sidebar.nav.createPost'),   icon: 'edit' },
+      { id: 'history',     label: t('sidebar.nav.history'),      icon: 'history' },
     ],
     activeNavId: activeNav,
     onNavClick: setActiveNav,
@@ -26,7 +28,7 @@ function useSidebarConfig(): SidebarConfig {
       { id: 'tiktok',    name: 'Tik-Tok',   icon: 'tiktok',    metric: '10k' },
     ],
 
-    actionLabel: 'Criar Post',
+    actionLabel: t('sidebar.action.createPost'),
     actionIcon: 'edit',
     onActionClick: () => setActiveNav('create-post'),
   };
