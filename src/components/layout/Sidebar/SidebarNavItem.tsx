@@ -4,7 +4,7 @@
  * Renders an icon + label row. When `active`, the row gets a dark
  * background with white text to match the design.
  */
-import { colors, spacing, borderRadius } from '@/theme';
+import { colors, spacing } from '@/theme';
 import { Icon } from '@/components/ui/Icon/Icon';
 import type { IconName } from '@/components/ui/Icon/icons';
 import { useState, type CSSProperties } from 'react';
