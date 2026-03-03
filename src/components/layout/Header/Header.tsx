@@ -1,4 +1,4 @@
-import { colors, shadows, spacing, zIndex } from '@/theme';
+import { colors, spacing, zIndex } from '@/theme';
 import { Logo } from '@/components/ui/Logo/Logo';
 import { UserInfo } from '@/components/ui/UserInfo/UserInfo';
 import { UserAvatar } from '@/components/ui/UserAvatar/UserAvatar';
@@ -40,7 +40,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: '3.5rem',
     padding: `0 ${spacing[6]}`,
     backgroundColor: colors.white,
-    boxShadow: shadows.sm,
+    borderBottom: `1px solid ${colors.neutral[40]}`,
     boxSizing: 'border-box',
   },
   right: {
