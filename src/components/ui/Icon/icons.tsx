@@ -14,6 +14,10 @@ import DashboardIcon from '@/assets/action/dashboard.svg?react';
 import EditIcon from '@/assets/editor/mode_edit.svg?react';
 import HistoryIcon from '@/assets/action/history.svg?react';
 
+// ── Action icons ───────────────────────────────────────────────────────────
+import VisibilityIcon from '@/assets/action/visibility.svg?react';
+import VisibilityOffIcon from '@/assets/action/visibility_off.svg?react';
+
 // ── Social / platform icons (branded — from assets/social_icons) ───────────
 import FacebookIcon from '@/assets/social_icons/Facebook/Original.svg?react';
 import InstagramIcon from '@/assets/social_icons/Instagram/Original.svg?react';
@@ -26,6 +30,8 @@ export const iconMap = {
   dashboard: DashboardIcon,
   edit: EditIcon,
   history: HistoryIcon,
+  visibility: VisibilityIcon,
+  visibilityOff: VisibilityOffIcon,
   facebook: FacebookIcon,
   instagram: InstagramIcon,
   youtube: YoutubeIcon,

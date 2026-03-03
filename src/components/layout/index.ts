@@ -9,4 +9,6 @@
 export { Header } from './Header/Header';
 export { Sidebar, SIDEBAR_WIDTH } from './Sidebar/Sidebar';
 export { AppLayout } from './AppLayout/AppLayout';
+export { AuthLayout } from './AuthLayout/AuthLayout';
+export { ProtectedRoute } from './ProtectedRoute/ProtectedRoute';
 export type { SidebarConfig, SidebarNavItemConfig, SidebarPlatformConfig } from './Sidebar/Sidebar.types';

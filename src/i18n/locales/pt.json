@@ -12,5 +12,39 @@
   },
   "header": {
     "defaultSubtitle": "Odontopediatra"
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "subtitle": "Entre na sua conta num instante",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "keepLoggedIn": "Manter-me conectado",
+      "forgotPassword": "Esqueceu-se da sua senha?",
+      "submitButton": "ENTRAR",
+      "noAccount": "Não tem uma conta?",
+      "signUpLink": "Inscreva-se"
+    },
+    "signup": {
+      "title": "Criar Conta",
+      "subtitle": "Cria a tua conta",
+      "nameLabel": "Nome",
+      "emailLabel": "Email",
+      "passwordLabel": "Senha",
+      "agreeTerms": "Concordo com os termos e a política de privacidade",
+      "submitButton": "CRIAR CONTA",
+      "alreadyMember": "Já és membro?",
+      "loginLink": "Iniciar sessão"
+    },
+    "validation": {
+      "required": "Este campo é obrigatório",
+      "invalidEmail": "Por favor insira um endereço de email válido",
+      "passwordMinLength": "Pelo menos 8 caracteres",
+      "passwordUppercase": "Pelo menos uma letra maiúscula",
+      "passwordLowercase": "Pelo menos uma letra minúscula",
+      "passwordNumber": "Pelo menos um número",
+      "passwordSpecial": "Pelo menos um caractere especial",
+      "mustAgreeTerms": "Tem de concordar com os termos e a política de privacidade"
+    }
   }
 }

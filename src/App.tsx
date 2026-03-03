@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppLayout } from '@/components';
-import { DashboardPage, CreatePostPage, HistoryPage } from '@/pages';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from '@/context';
+import { AppLayout, ProtectedRoute } from '@/components';
+import { DashboardPage, CreatePostPage, HistoryPage, LoginPage, SignUpPage } from '@/pages';
 import type { SidebarConfig } from '@/components';
 import './App.css';
 
@@ -35,7 +37,8 @@ function useSidebarConfig(): SidebarConfig {
   };
 }
 
-function App() {
+/** Main authenticated app shell with sidebar navigation. */
+function AuthenticatedApp() {
   const sidebarConfig = useSidebarConfig();
 
   return (
@@ -44,6 +47,27 @@ function App() {
       {sidebarConfig.activeNavId === 'create-post' && <CreatePostPage />}
       {sidebarConfig.activeNavId === 'history' && <HistoryPage />}
     </AppLayout>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedApp />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

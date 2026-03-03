@@ -1,7 +1,15 @@
 /**
  * App-wide TypeScript type definitions — barrel export.
- *
- * Add one export line per type file as you create them, e.g.:
- *   export type { User, UserRole } from './user';
- *   export type { ApiResponse, PaginatedResponse } from './api';
  */
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+}

@@ -12,5 +12,39 @@
   },
   "header": {
     "defaultSubtitle": "Pediatric Dentist"
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Login your account in a seconds",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "keepLoggedIn": "Keep me logged in",
+      "forgotPassword": "Forgot your password?",
+      "submitButton": "LOG IN",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up"
+    },
+    "signup": {
+      "title": "Sign In",
+      "subtitle": "Create your account",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "agreeTerms": "I agree to the terms and privacy policy",
+      "submitButton": "CREATE ACCOUNT",
+      "alreadyMember": "Already a member?",
+      "loginLink": "Login"
+    },
+    "validation": {
+      "required": "This field is required",
+      "invalidEmail": "Please enter a valid email address",
+      "passwordMinLength": "At least 8 characters",
+      "passwordUppercase": "At least one uppercase letter",
+      "passwordLowercase": "At least one lowercase letter",
+      "passwordNumber": "At least one number",
+      "passwordSpecial": "At least one special character",
+      "mustAgreeTerms": "You must agree to the terms and privacy policy"
+    }
   }
 }
