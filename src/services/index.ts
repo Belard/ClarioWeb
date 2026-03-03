@@ -1,7 +1,6 @@
 /**
  * API / data services — barrel export.
- *
- * Add one export line per service as you create them, e.g.:
- *   export { userService } from './userService';
- *   export { authService } from './authService';
  */
+
+export * as authService from './authService';
+export { ApiError, request, setToken, clearToken } from './api';

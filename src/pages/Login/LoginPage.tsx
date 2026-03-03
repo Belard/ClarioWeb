@@ -22,6 +22,7 @@ export function LoginPage() {
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [serverError, setServerError] = useState('');
 
   function validate(): boolean {
     const newErrors: typeof errors = {};
@@ -45,10 +46,12 @@ export function LoginPage() {
     if (!validate()) return;
 
     setIsSubmitting(true);
+    setServerError('');
     try {
       await login(email, password);
       navigate('/', { replace: true });
-    } catch {
+    } catch (err) {
+      setServerError(err instanceof Error ? err.message : t('auth.login.genericError'));
       setIsSubmitting(false);
     }
   }
@@ -57,6 +60,8 @@ export function LoginPage() {
     <AuthLayout>
       <h1 style={styles.title}>{t('auth.login.title')}</h1>
       <p style={styles.subtitle}>{t('auth.login.subtitle')}</p>
+
+      {serverError && <div style={styles.serverError}>{serverError}</div>}
 
       <form onSubmit={handleSubmit} noValidate>
         {/* Email */}
@@ -282,4 +287,14 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: typography.fontWeight.semibold,
     textDecoration: 'none',
   },
+  serverError: {
+    ...typography.typeStyles.bodyS,
+    color: colors.error.default,
+    backgroundColor: 'rgba(220, 38, 38, 0.08)',
+    border: `1px solid ${colors.error.default}`,
+    borderRadius: '4px',
+    padding: `${spacing[2.5]} ${spacing[3]}`,
+    marginBottom: spacing[4],
+    textAlign: 'center' as const,
+  } as CSSProperties,
 };

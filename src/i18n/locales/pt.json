@@ -23,7 +23,8 @@
       "forgotPassword": "Esqueceu-se da sua senha?",
       "submitButton": "ENTRAR",
       "noAccount": "Não tem uma conta?",
-      "signUpLink": "Inscreva-se"
+      "signUpLink": "Inscreva-se",
+      "genericError": "Algo correu mal. Por favor tente novamente."
     },
     "signup": {
       "title": "Criar Conta",
@@ -34,7 +35,8 @@
       "agreeTerms": "Concordo com os termos e a política de privacidade",
       "submitButton": "CRIAR CONTA",
       "alreadyMember": "Já és membro?",
-      "loginLink": "Iniciar sessão"
+      "loginLink": "Iniciar sessão",
+      "genericError": "Algo correu mal. Por favor tente novamente."
     },
     "validation": {
       "required": "Este campo é obrigatório",

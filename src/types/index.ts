@@ -13,3 +13,9 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+/** Shape returned by POST /api/auth/login and POST /api/auth/register */
+export interface AuthResponse {
+  token: string;
+  user: User;
+}

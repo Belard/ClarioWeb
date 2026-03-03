@@ -1,5 +1,8 @@
 # Production – optimised nginx image serving the compiled React app
 # Usage: docker compose -f docker-compose.prod.yml up --build
+#
+# The API is expected to run on the same server on port 3001.
+# nginx proxies /api/, /auth/, /oauth/, and /uploads/ to 127.0.0.1:3001.
 
 services:
   app:
@@ -8,6 +11,8 @@ services:
       target: prod
     ports:
       - "3000:80"
+    # Let the container reach the host's port 3001 (where the Go API runs)
+    network_mode: host
     environment:
       - NODE_ENV=production
     restart: unless-stopped

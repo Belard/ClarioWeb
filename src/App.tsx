@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/context';
 import { AppLayout, ProtectedRoute } from '@/components';
 import { DashboardPage, CreatePostPage, HistoryPage, LoginPage, SignUpPage } from '@/pages';

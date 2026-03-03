@@ -23,7 +23,8 @@
       "forgotPassword": "Forgot your password?",
       "submitButton": "LOG IN",
       "noAccount": "Don't have an account?",
-      "signUpLink": "Sign up"
+      "signUpLink": "Sign up",
+      "genericError": "Something went wrong. Please try again."
     },
     "signup": {
       "title": "Sign In",
@@ -34,7 +35,8 @@
       "agreeTerms": "I agree to the terms and privacy policy",
       "submitButton": "CREATE ACCOUNT",
       "alreadyMember": "Already a member?",
-      "loginLink": "Login"
+      "loginLink": "Login",
+      "genericError": "Something went wrong. Please try again."
     },
     "validation": {
       "required": "This field is required",
