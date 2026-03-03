@@ -1,7 +1,6 @@
 /**
  * Pages — barrel export.
- *
- * Add one export line per page as you create them, e.g.:
- *   export { HomePage } from './Home/HomePage';
- *   export { AboutPage } from './About/AboutPage';
  */
+export { DashboardPage } from './Dashboard/DashboardPage';
+export { CreatePostPage } from './CreatePost/CreatePostPage';
+export { HistoryPage } from './History/HistoryPage';

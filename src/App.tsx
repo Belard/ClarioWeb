@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppLayout } from '@/components';
+import { DashboardPage, CreatePostPage, HistoryPage } from '@/pages';
 import type { SidebarConfig } from '@/components';
 import './App.css';
 
@@ -39,8 +40,9 @@ function App() {
 
   return (
     <AppLayout sidebarConfig={sidebarConfig}>
-      {/* Page content goes here — swap based on activeNavId or a router */}
-      <div />
+      {sidebarConfig.activeNavId === 'dashboard' && <DashboardPage />}
+      {sidebarConfig.activeNavId === 'create-post' && <CreatePostPage />}
+      {sidebarConfig.activeNavId === 'history' && <HistoryPage />}
     </AppLayout>
   );
 }
