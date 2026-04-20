@@ -10,7 +10,6 @@
  *   </AppLayout>
  */
 import { colors, typography } from '@/theme';
-import { Header } from '@/components/layout/Header/Header';
 import { Sidebar, SIDEBAR_WIDTH } from '@/components/layout/Sidebar/Sidebar';
 import type { SidebarConfig } from '@/components/layout/Sidebar/Sidebar.types';
 import type { CSSProperties, ReactNode } from 'react';
@@ -23,7 +22,6 @@ interface AppLayoutProps {
 export function AppLayout({ children, sidebarConfig }: AppLayoutProps) {
   return (
     <div style={styles.root}>
-      <Header />
       <Sidebar {...sidebarConfig} />
       <main style={styles.main}>{children}</main>
     </div>

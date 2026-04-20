@@ -5,7 +5,7 @@
  *   export { Button } from './Button/Button';
  */
 
-export { Logo } from './Logo/Logo';
+export { Logo, LogoColour } from './Logo/Logo';
 export { UserInfo } from './UserInfo/UserInfo';
 export { UserAvatar } from './UserAvatar/UserAvatar';
 export { Icon } from './Icon/Icon';

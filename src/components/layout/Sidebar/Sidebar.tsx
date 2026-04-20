@@ -17,10 +17,11 @@
  */
 import { colors, spacing, shadows } from '@/theme';
 import { useTranslation } from 'react-i18next';
+import { LogoColour, UserInfo, UserAvatar } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
 import { SidebarNavItem } from './SidebarNavItem';
 import { SidebarSection } from './SidebarSection';
 import { SidebarPlatformItem } from './SidebarPlatformItem';
-import { SidebarActionButton } from './SidebarActionButton';
 import type { SidebarConfig } from './Sidebar.types';
 import type { CSSProperties } from 'react';
 
@@ -32,14 +33,17 @@ export function Sidebar({
   activeNavId,
   onNavClick,
   platforms = [],
-  actionLabel,
-  actionIcon,
-  onActionClick,
 }: SidebarConfig) {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <aside style={styles.aside}>
+      {/* ── Logo header ───────────────────────────────────────────────────── */}
+      <div style={styles.header}>
+        <LogoColour height={32} />
+      </div>
+
       {/* ── Scrollable content ────────────────────────────────────────────── */}
       <div style={styles.body}>
         {/* Navigation */}
@@ -76,16 +80,16 @@ export function Sidebar({
         )}
       </div>
 
-      {/* ── Sticky bottom action ──────────────────────────────────────────── */}
-      {actionLabel && (
-        <div style={styles.footer}>
-          <SidebarActionButton
-            label={actionLabel}
-            icon={actionIcon}
-            onClick={onActionClick}
-          />
-        </div>
-      )}
+      {/* ── Sticky bottom section ─────────────────────────────────────────── */}
+      <div style={styles.bottomSection}>
+        {/* User info footer */}
+        {user && (
+          <div style={styles.userFooter}>
+            <UserAvatar size={40} alt={user.name} />
+            <UserInfo name={user.name} subtitle={user.email} />
+          </div>
+        )}
+      </div>
     </aside>
   );
 }
@@ -95,7 +99,7 @@ export function Sidebar({
 const styles: Record<string, CSSProperties> = {
   aside: {
     position: 'fixed',
-    top: '3.5rem', // sits below the Header (56 px)
+    top: 0,
     left: 0,
     bottom: 0,
     width: SIDEBAR_WIDTH,
@@ -107,6 +111,13 @@ const styles: Record<string, CSSProperties> = {
     zIndex: 100,
     boxSizing: 'border-box',
   },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: `${spacing[4]} ${spacing[3]}`,
+    // borderBottom: `1px solid ${colors.neutral[40]}`,
+  },
   body: {
     flex: 1,
     display: 'flex',
@@ -114,7 +125,18 @@ const styles: Record<string, CSSProperties> = {
     gap: spacing[8],
     overflowY: 'auto',
   },
-  footer: {
+  bottomSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    borderTop: `1px solid ${colors.neutral[40]}`,
+  },
+  actionContainer: {
+    padding: `${spacing[3]} ${spacing[3]}`,
+  },
+  userFooter: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing[3],
     padding: `${spacing[3]} ${spacing[3]}`,
     borderTop: `1px solid ${colors.neutral[40]}`,
   },
