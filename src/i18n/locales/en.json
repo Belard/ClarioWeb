@@ -24,6 +24,22 @@
     "publish": "Publish",
     "publishing": "Publishing...",
     "comingSoon": "Coming soon",
+    "aria": {
+      "addPlatform": "Add platform",
+      "removePlatform": "Remove {{platform}}",
+      "removeAttachment": "Remove {{fileName}}"
+    },
+    "preview": {
+      "title": "Post Preview",
+      "unifiedTitle": "Unified Preview",
+      "unifiedLabel": "How your post will look",
+      "meta": "{{chars}} chars • {{media}} media",
+      "startTyping": "Start typing your post content to see the preview.",
+      "platformTitle": "Platform Preview",
+      "platformEmpty": "Select at least one platform to see previews here.",
+      "livePreview": "Live preview",
+      "writeToPlatform": "Write content to preview on {{platform}}."
+    },
     "success": "Post published successfully.",
     "errors": {
       "selectPlatform": "Select at least one platform.",

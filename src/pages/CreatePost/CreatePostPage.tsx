@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/Icon/Icon';
 import { ApiTimeoutError, postService } from '@/services';
@@ -14,6 +14,7 @@ const PLATFORM_OPTIONS = [
 ] as const;
 
 type PlatformOption = (typeof PLATFORM_OPTIONS)[number];
+type AttachmentPreview = { file: File; url: string; isVideo: boolean };
 
 export function CreatePostPage() {
   const { t } = useTranslation();
@@ -32,6 +33,22 @@ export function CreatePostPage() {
     () => PLATFORM_OPTIONS.filter((option) => selectedPlatforms.includes(option.id)),
     [selectedPlatforms],
   );
+
+  const attachmentPreviews = useMemo<AttachmentPreview[]>(
+    () =>
+      attachments.map((file: File) => ({
+        file,
+        url: URL.createObjectURL(file),
+        isVideo: file.type.startsWith('video/'),
+      })),
+    [attachments],
+  );
+
+  useEffect(() => {
+    return () => {
+      attachmentPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [attachmentPreviews]);
 
   const availablePlatformItems = useMemo(
     () => PLATFORM_OPTIONS.filter((option) => !selectedPlatforms.includes(option.id)),
@@ -184,7 +201,7 @@ export function CreatePostPage() {
                     type="button"
                     style={styles.iconActionButton}
                     onClick={() => removePlatform(platform.id)}
-                    aria-label={`Remove ${platform.label}`}
+                    aria-label={t('createPost.aria.removePlatform', { platform: platform.label })}
                   >
                     <Icon name="close" size={14} color={colors.neutral[80]} />
                   </button>
@@ -195,7 +212,7 @@ export function CreatePostPage() {
                 type="button"
                 style={styles.iconActionButton}
                 onClick={() => setShowPlatformPicker((prev: boolean) => !prev)}
-                aria-label="Add platform"
+                aria-label={t('createPost.aria.addPlatform')}
               >
                 <Icon name="add" size={16} color={colors.neutral[90]} />
               </button>
@@ -269,7 +286,7 @@ export function CreatePostPage() {
                     type="button"
                     style={styles.iconActionButton}
                     onClick={() => removeAttachment(index)}
-                    aria-label={`Remove ${file.name}`}
+                    aria-label={t('createPost.aria.removeAttachment', { fileName: file.name })}
                   >
                     <Icon name="close" size={14} color={colors.neutral[80]} />
                   </button>
@@ -298,7 +315,102 @@ export function CreatePostPage() {
       </div>
 
       <aside style={styles.sidePanel}>
-        <p style={styles.comingSoon}>{t('createPost.comingSoon')}</p>
+        <div style={styles.previewPanelContent}>
+          <h2 style={styles.previewPanelTitle}>{t('createPost.preview.title')}</h2>
+
+          <section style={styles.previewSection}>
+            <h3 style={styles.previewSectionTitle}>{t('createPost.preview.unifiedTitle')}</h3>
+            <article style={styles.previewCard}>
+              <div style={styles.previewCardHeader}>
+                <span style={styles.previewCardLabel}>{t('createPost.preview.unifiedLabel')}</span>
+                <span style={styles.previewMeta}>
+                  {t('createPost.preview.meta', {
+                    chars: content.trim().length,
+                    media: attachments.length,
+                  })}
+                </span>
+              </div>
+
+              <p style={styles.previewContentText}>
+                {content.trim() || t('createPost.preview.startTyping')}
+              </p>
+
+              {attachmentPreviews.length > 0 && (
+                <div style={styles.previewMediaGrid}>
+                  {attachmentPreviews.map((preview, index) => (
+                    <div key={`${preview.file.name}-${index}`} style={styles.previewMediaTile}>
+                      {preview.isVideo ? (
+                        <video
+                          src={preview.url}
+                          style={styles.previewMedia}
+                          muted
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <img src={preview.url} alt={preview.file.name} style={styles.previewMedia} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </article>
+          </section>
+
+          <section style={styles.previewSection}>
+            <h3 style={styles.previewSectionTitle}>{t('createPost.preview.platformTitle')}</h3>
+
+            {selectedPlatformItems.length === 0 ? (
+              <div style={styles.previewEmptyState}>{t('createPost.preview.platformEmpty')}</div>
+            ) : (
+              <div style={styles.platformPreviewList}>
+                {selectedPlatformItems.map((platform) => (
+                  <article key={platform.id} style={styles.platformPreviewCard}>
+                    <div style={styles.platformPreviewHeader}>
+                      <div style={styles.platformPreviewTitleRow}>
+                        <Icon name={platform.icon} size={16} />
+                        <span style={styles.platformPreviewTitle}>{platform.label}</span>
+                      </div>
+                      <span style={styles.previewMeta}>{t('createPost.preview.livePreview')}</span>
+                    </div>
+
+                    <p style={styles.platformPreviewText}>
+                      {content.trim() ||
+                        t('createPost.preview.writeToPlatform', { platform: platform.label })}
+                    </p>
+
+                    {attachmentPreviews.length > 0 && (
+                      <div style={styles.platformMediaRow}>
+                        {attachmentPreviews.slice(0, 3).map((preview, index) => (
+                          <div key={`${platform.id}-${preview.file.name}-${index}`} style={styles.platformMediaThumbWrap}>
+                            {preview.isVideo ? (
+                              <video
+                                src={preview.url}
+                                style={styles.platformMediaThumb}
+                                muted
+                                playsInline
+                                preload="metadata"
+                              />
+                            ) : (
+                              <img
+                                src={preview.url}
+                                alt={preview.file.name}
+                                style={styles.platformMediaThumb}
+                              />
+                            )}
+                          </div>
+                        ))}
+                        {attachmentPreviews.length > 3 && (
+                          <div style={styles.extraMediaCount}>+{attachmentPreviews.length - 3}</div>
+                        )}
+                      </div>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </aside>
     </div>
   );
@@ -531,18 +643,163 @@ const styles: Record<string, CSSProperties> = {
   sidePanel: {
     flex: '1 1 18rem',
     minWidth: '15rem',
-    height: '100%',
+    maxWidth: '26rem',
     backgroundColor: colors.neutral[50],
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing[4],
+    borderLeft: `1px solid ${colors.neutral[60]}`,
+    padding: `${spacing[5]} ${spacing[4]}`,
     boxSizing: 'border-box',
+    position: 'sticky',
+    top: 0,
+    alignSelf: 'flex-start',
+    maxHeight: '100vh',
+    overflowY: 'auto',
   },
-  comingSoon: {
+  previewPanelContent: {
+    display: 'grid',
+    gap: spacing[4],
+  },
+  previewPanelTitle: {
     ...typography.typeStyles.headingMSemiBold,
     fontFamily: typography.fontFamily.generalSans.join(', '),
     color: colors.neutral[100],
     margin: 0,
+  },
+  previewSection: {
+    display: 'grid',
+    gap: spacing[2],
+  },
+  previewSectionTitle: {
+    ...typography.typeStyles.bodyMSemiBold,
+    fontFamily: typography.fontFamily.generalSans.join(', '),
+    color: colors.neutral[90],
+    margin: 0,
+  },
+  previewCard: {
+    backgroundColor: colors.white,
+    border: `1px solid ${colors.neutral[60]}`,
+    borderRadius: borderRadius.lg,
+    padding: spacing[3],
+    display: 'grid',
+    gap: spacing[2],
+    boxShadow: shadows.sm,
+  },
+  previewCardHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing[2],
+  },
+  previewCardLabel: {
+    ...typography.typeStyles.bodySSemiBold,
+    fontFamily: typography.fontFamily.generalSans.join(', '),
+    color: colors.neutral[90],
+  },
+  previewMeta: {
+    ...typography.typeStyles.label,
+    fontFamily: typography.fontFamily.inter.join(', '),
+    color: colors.neutral[70],
+  },
+  previewContentText: {
+    ...typography.typeStyles.bodyS,
+    fontFamily: typography.fontFamily.inter.join(', '),
+    color: colors.neutral[90],
+    margin: 0,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+  },
+  previewMediaGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    gap: spacing[2],
+  },
+  previewMediaTile: {
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    border: `1px solid ${colors.neutral[50]}`,
+    backgroundColor: colors.neutral[30],
+    aspectRatio: '4 / 3',
+  },
+  previewMedia: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  },
+  previewEmptyState: {
+    ...typography.typeStyles.bodyS,
+    fontFamily: typography.fontFamily.inter.join(', '),
+    color: colors.neutral[80],
+    backgroundColor: colors.white,
+    border: `1px dashed ${colors.neutral[60]}`,
+    borderRadius: borderRadius.md,
+    padding: spacing[3],
+  },
+  platformPreviewList: {
+    display: 'grid',
+    gap: spacing[2],
+  },
+  platformPreviewCard: {
+    backgroundColor: colors.white,
+    border: `1px solid ${colors.neutral[60]}`,
+    borderRadius: borderRadius.md,
+    padding: spacing[3],
+    display: 'grid',
+    gap: spacing[2],
+  },
+  platformPreviewHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing[2],
+  },
+  platformPreviewTitleRow: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: spacing[1.5],
+  },
+  platformPreviewTitle: {
+    ...typography.typeStyles.bodySSemiBold,
+    fontFamily: typography.fontFamily.generalSans.join(', '),
+    color: colors.neutral[90],
+  },
+  platformPreviewText: {
+    ...typography.typeStyles.bodyS,
+    fontFamily: typography.fontFamily.inter.join(', '),
+    color: colors.neutral[90],
+    margin: 0,
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+  },
+  platformMediaRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: spacing[1.5],
+  },
+  platformMediaThumbWrap: {
+    width: '3rem',
+    height: '3rem',
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+    border: `1px solid ${colors.neutral[50]}`,
+    backgroundColor: colors.neutral[30],
+    flexShrink: 0,
+  },
+  platformMediaThumb: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block',
+  },
+  extraMediaCount: {
+    ...typography.typeStyles.label,
+    fontFamily: typography.fontFamily.inter.join(', '),
+    color: colors.neutral[80],
+    border: `1px solid ${colors.neutral[60]}`,
+    borderRadius: borderRadius.full,
+    padding: `0 ${spacing[1.5]}`,
+    height: '1.5rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 };
