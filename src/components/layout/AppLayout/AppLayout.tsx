@@ -39,7 +39,6 @@ const styles: Record<string, CSSProperties> = {
   },
   main: {
     marginLeft: SIDEBAR_WIDTH,
-    paddingTop: '3.5rem', // Header height
     minHeight: '100vh',
     boxSizing: 'border-box',
   },

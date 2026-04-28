@@ -17,6 +17,10 @@ import HistoryIcon from '@/assets/action/history.svg?react';
 // ── Action icons ───────────────────────────────────────────────────────────
 import VisibilityIcon from '@/assets/action/visibility.svg?react';
 import VisibilityOffIcon from '@/assets/action/visibility_off.svg?react';
+import AddIcon from '@/assets/content/add.svg?react';
+import CloseIcon from '@/assets/navigation/close.svg?react';
+import AttachmentIcon from '@/assets/file/attachment.svg?react';
+import ImageIcon from '@/assets/image/image.svg?react';
 
 // ── Social / platform icons (branded — from assets/social_icons) ───────────
 import FacebookIcon from '@/assets/social_icons/Facebook/Original.svg?react';
@@ -32,6 +36,10 @@ export const iconMap = {
   history: HistoryIcon,
   visibility: VisibilityIcon,
   visibilityOff: VisibilityOffIcon,
+  add: AddIcon,
+  close: CloseIcon,
+  attachment: AttachmentIcon,
+  image: ImageIcon,
   facebook: FacebookIcon,
   instagram: InstagramIcon,
   youtube: YoutubeIcon,

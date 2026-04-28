@@ -6,6 +6,7 @@
  */
 
 const TOKEN_KEY = 'clario_auth_token';
+const DEFAULT_REQUEST_TIMEOUT_MS = 15000;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,13 @@ export class ApiError extends Error {
   }
 }
 
+export class ApiTimeoutError extends Error {
+  constructor(message = 'Request timed out.') {
+    super(message);
+    this.name = 'ApiTimeoutError';
+  }
+}
+
 // ── Core request function ────────────────────────────────────────────────────
 
 interface RequestOptions {
@@ -40,19 +48,28 @@ interface RequestOptions {
   headers?: Record<string, string>;
   /** If true, skip attaching the Authorization header */
   public?: boolean;
+  timeoutMs?: number;
 }
 
 export async function request<T = unknown>(
   path: string,
   opts: RequestOptions = {},
 ): Promise<T> {
-  const { method = 'GET', body, headers = {}, public: isPublic = false } = opts;
+  const {
+    method = 'GET',
+    body,
+    headers = {},
+    public: isPublic = false,
+    timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
+  } = opts;
 
   const reqHeaders: Record<string, string> = {
     ...headers,
   };
 
-  if (body) {
+  const isFormData = body instanceof FormData;
+
+  if (body && !isFormData) {
     reqHeaders['Content-Type'] = 'application/json';
   }
 
@@ -63,11 +80,28 @@ export async function request<T = unknown>(
     }
   }
 
-  const res = await fetch(path, {
-    method,
-    headers: reqHeaders,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const abortController = new AbortController();
+  const timeoutId = window.setTimeout(() => {
+    abortController.abort();
+  }, timeoutMs);
+
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      method,
+      headers: reqHeaders,
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+      signal: abortController.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new ApiTimeoutError();
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   // Try to parse JSON regardless — the API may return an error body
   let data: T | undefined;

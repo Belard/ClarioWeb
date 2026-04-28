@@ -13,6 +13,27 @@
   "header": {
     "defaultSubtitle": "Pediatric Dentist"
   },
+  "createPost": {
+    "title": "Create New Post",
+    "subtitle": "Create and schedule your next viral post.",
+    "publishTo": "Publish to",
+    "clearPlatforms": "Clear",
+    "postLabel": "Your post",
+    "postPlaceholder": "What do you want to share?",
+    "addFiles": "Add files",
+    "publish": "Publish",
+    "publishing": "Publishing...",
+    "comingSoon": "Coming soon",
+    "success": "Post published successfully.",
+    "errors": {
+      "selectPlatform": "Select at least one platform.",
+      "postRequired": "Write something before publishing.",
+      "maxFiles": "You can attach up to 5 files.",
+      "timeout": "The request took too long. Please try again.",
+      "uploadFailed": "Failed to upload one or more files.",
+      "publishFailed": "Failed to publish the post."
+    }
+  },
   "auth": {
     "login": {
       "title": "Login",

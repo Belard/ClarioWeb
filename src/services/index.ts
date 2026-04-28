@@ -3,4 +3,5 @@
  */
 
 export * as authService from './authService';
-export { ApiError, request, setToken, clearToken } from './api';
+export * as postService from './postService';
+export { ApiError, ApiTimeoutError, request, setToken, clearToken } from './api';

@@ -13,6 +13,27 @@
   "header": {
     "defaultSubtitle": "Odontopediatra"
   },
+  "createPost": {
+    "title": "Criar Novo Post",
+    "subtitle": "Cria e agenda o teu proximo post viral.",
+    "publishTo": "Publicar para",
+    "clearPlatforms": "Limpar",
+    "postLabel": "O teu post",
+    "postPlaceholder": "O que queres partilhar?",
+    "addFiles": "Adicionar ficheiros",
+    "publish": "Publicar",
+    "publishing": "A publicar...",
+    "comingSoon": "Brevemente",
+    "success": "Post publicado com sucesso.",
+    "errors": {
+      "selectPlatform": "Seleciona pelo menos uma plataforma.",
+      "postRequired": "Escreve algo antes de publicar.",
+      "maxFiles": "Podes anexar ate 5 ficheiros.",
+      "timeout": "O pedido demorou demasiado tempo. Tenta novamente.",
+      "uploadFailed": "Falha ao carregar um ou mais ficheiros.",
+      "publishFailed": "Falha ao publicar o post."
+    }
+  },
   "auth": {
     "login": {
       "title": "Entrar",
