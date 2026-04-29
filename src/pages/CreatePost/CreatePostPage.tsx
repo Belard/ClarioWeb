@@ -1,24 +1,31 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui/Icon/Icon';
-import { ApiTimeoutError, postService, settingsStorage } from '@/services';
-import type { PostDefaults } from '@/types';
-import { borderRadius, colors, shadows, spacing, typography } from '@/theme';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ChangeEvent,
+} from "react";
+import { useTranslation } from "react-i18next";
+import { Icon } from "@/components/ui/Icon/Icon";
+import { ApiTimeoutError, postService, settingsStorage } from "@/services";
+import type { PostDefaults } from "@/types";
+import { borderRadius, colors, shadows, spacing, typography } from "@/theme";
 
 const MAX_FILES = 5;
 
 const FALLBACK_DEFAULTS: PostDefaults = {
-  post_type: 'normal',
-  privacy_level: 'public',
+  post_type: "normal",
+  privacy_level: "public",
   is_sponsored: false,
-  platforms: ['instagram'],
+  platforms: ["instagram"],
 };
 
 const PLATFORM_OPTIONS = [
-  { id: 'facebook', label: 'Facebook', icon: 'facebook' },
-  { id: 'instagram', label: 'Instagram', icon: 'instagram' },
-  { id: 'youtube', label: 'YouTube', icon: 'youtube' },
-  { id: 'tiktok', label: 'TikTok', icon: 'tiktok' },
+  { id: "facebook", label: "Facebook", icon: "facebook" },
+  { id: "instagram", label: "Instagram", icon: "instagram" },
+  { id: "youtube", label: "YouTube", icon: "youtube" },
+  { id: "tiktok", label: "TikTok", icon: "tiktok" },
 ] as const;
 
 type PlatformOption = (typeof PLATFORM_OPTIONS)[number];
@@ -28,18 +35,27 @@ export function CreatePostPage() {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformOption['id'][]>([]);
-  const [content, setContent] = useState('');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<
+    PlatformOption["id"][]
+  >([]);
+  const [content, setContent] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showPlatformPicker, setShowPlatformPicker] = useState(false);
-  const [postDefaults, setPostDefaults] = useState<PostDefaults>(FALLBACK_DEFAULTS);
+  const [postDefaults, setPostDefaults] =
+    useState<PostDefaults>(FALLBACK_DEFAULTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ platforms?: string; content?: string }>({});
+  const [submitError, setSubmitError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{
+    platforms?: string;
+    content?: string;
+  }>({});
 
   const selectedPlatformItems = useMemo(
-    () => PLATFORM_OPTIONS.filter((option) => selectedPlatforms.includes(option.id)),
+    () =>
+      PLATFORM_OPTIONS.filter((option) =>
+        selectedPlatforms.includes(option.id),
+      ),
     [selectedPlatforms],
   );
 
@@ -48,7 +64,7 @@ export function CreatePostPage() {
       attachments.map((file: File) => ({
         file,
         url: URL.createObjectURL(file),
-        isVideo: file.type.startsWith('video/'),
+        isVideo: file.type.startsWith("video/"),
       })),
     [attachments],
   );
@@ -63,19 +79,22 @@ export function CreatePostPage() {
     async function loadDefaults() {
       const defaults = await settingsStorage.loadPostDefaults();
       setPostDefaults(defaults);
-      setSelectedPlatforms(defaults.platforms as PlatformOption['id'][]);
+      setSelectedPlatforms(defaults.platforms as PlatformOption["id"][]);
     }
 
     void loadDefaults();
   }, []);
 
   const availablePlatformItems = useMemo(
-    () => PLATFORM_OPTIONS.filter((option) => !selectedPlatforms.includes(option.id)),
+    () =>
+      PLATFORM_OPTIONS.filter(
+        (option) => !selectedPlatforms.includes(option.id),
+      ),
     [selectedPlatforms],
   );
 
-  function addPlatform(platformId: PlatformOption['id']) {
-    setSelectedPlatforms((prev: PlatformOption['id'][]) =>
+  function addPlatform(platformId: PlatformOption["id"]) {
+    setSelectedPlatforms((prev: PlatformOption["id"][]) =>
       prev.includes(platformId) ? prev : [...prev, platformId],
     );
     setFieldErrors((prev: { platforms?: string; content?: string }) => ({
@@ -84,9 +103,9 @@ export function CreatePostPage() {
     }));
   }
 
-  function removePlatform(platformId: PlatformOption['id']) {
-    setSelectedPlatforms((prev: PlatformOption['id'][]) =>
-      prev.filter((item: PlatformOption['id']) => item !== platformId),
+  function removePlatform(platformId: PlatformOption["id"]) {
+    setSelectedPlatforms((prev: PlatformOption["id"][]) =>
+      prev.filter((item: PlatformOption["id"]) => item !== platformId),
     );
   }
 
@@ -101,34 +120,36 @@ export function CreatePostPage() {
       return;
     }
 
-    setSuccessMessage('');
-    setSubmitError('');
+    setSuccessMessage("");
+    setSubmitError("");
 
     setAttachments((prev: File[]) => {
       const merged = [...prev, ...nextFiles];
       if (merged.length > MAX_FILES) {
-        setSubmitError(t('createPost.errors.maxFiles'));
+        setSubmitError(t("createPost.errors.maxFiles"));
         return merged.slice(0, MAX_FILES);
       }
       return merged;
     });
 
-    event.target.value = '';
+    event.target.value = "";
   }
 
   function removeAttachment(index: number) {
-    setAttachments((prev: File[]) => prev.filter((_: File, currentIndex: number) => currentIndex !== index));
+    setAttachments((prev: File[]) =>
+      prev.filter((_: File, currentIndex: number) => currentIndex !== index),
+    );
   }
 
   function validateBeforePublish() {
     const nextErrors: typeof fieldErrors = {};
 
     if (selectedPlatforms.length === 0) {
-      nextErrors.platforms = t('createPost.errors.selectPlatform');
+      nextErrors.platforms = t("createPost.errors.selectPlatform");
     }
 
     if (!content.trim()) {
-      nextErrors.content = t('createPost.errors.postRequired');
+      nextErrors.content = t("createPost.errors.postRequired");
     }
 
     setFieldErrors(nextErrors);
@@ -140,8 +161,8 @@ export function CreatePostPage() {
       return;
     }
 
-    setSuccessMessage('');
-    setSubmitError('');
+    setSuccessMessage("");
+    setSubmitError("");
 
     if (!validateBeforePublish()) {
       return;
@@ -161,8 +182,8 @@ export function CreatePostPage() {
         } catch (error) {
           setSubmitError(
             error instanceof ApiTimeoutError
-              ? t('createPost.errors.timeout')
-              : t('createPost.errors.uploadFailed'),
+              ? t("createPost.errors.timeout")
+              : t("createPost.errors.uploadFailed"),
           );
           return;
         }
@@ -177,20 +198,20 @@ export function CreatePostPage() {
         media_ids: uploadedMediaIds,
       });
 
-      setContent('');
+      setContent("");
       setSelectedPlatforms([]);
       setAttachments([]);
       setShowPlatformPicker(false);
       setFieldErrors({});
-      setSuccessMessage(t('createPost.success'));
+      setSuccessMessage(t("createPost.success"));
     } catch (error) {
       const message =
         error instanceof ApiTimeoutError
-          ? t('createPost.errors.timeout')
+          ? t("createPost.errors.timeout")
           : error instanceof Error
             ? error.message
-            : t('createPost.errors.publishFailed');
-      setSubmitError(message || t('createPost.errors.publishFailed'));
+            : t("createPost.errors.publishFailed");
+      setSubmitError(message || t("createPost.errors.publishFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -199,14 +220,18 @@ export function CreatePostPage() {
   return (
     <div style={styles.page}>
       <div style={styles.mainPanel}>
-        <h1 style={styles.title}>{t('createPost.title')}</h1>
-        <p style={styles.subtitle}>{t('createPost.subtitle')}</p>
+        <h1 style={styles.title}>{t("createPost.title")}</h1>
+        <p style={styles.subtitle}>{t("createPost.subtitle")}</p>
 
         <section style={styles.section}>
           <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>{t('createPost.publishTo')}</h2>
-            <button type="button" style={styles.clearButton} onClick={clearPlatforms}>
-              {t('createPost.clearPlatforms')}
+            <h2 style={styles.sectionTitle}>{t("createPost.publishTo")}</h2>
+            <button
+              type="button"
+              style={styles.clearButton}
+              onClick={clearPlatforms}
+            >
+              {t("createPost.clearPlatforms")}
             </button>
           </div>
 
@@ -220,7 +245,9 @@ export function CreatePostPage() {
                     type="button"
                     style={styles.iconActionButton}
                     onClick={() => removePlatform(platform.id)}
-                    aria-label={t('createPost.aria.removePlatform', { platform: platform.label })}
+                    aria-label={t("createPost.aria.removePlatform", {
+                      platform: platform.label,
+                    })}
                   >
                     <Icon name="close" size={14} color={colors.neutral[80]} />
                   </button>
@@ -231,7 +258,7 @@ export function CreatePostPage() {
                 type="button"
                 style={styles.iconActionButton}
                 onClick={() => setShowPlatformPicker((prev: boolean) => !prev)}
-                aria-label={t('createPost.aria.addPlatform')}
+                aria-label={t("createPost.aria.addPlatform")}
               >
                 <Icon name="add" size={16} color={colors.neutral[90]} />
               </button>
@@ -254,11 +281,13 @@ export function CreatePostPage() {
             )}
           </div>
 
-          {fieldErrors.platforms && <span style={styles.errorText}>{fieldErrors.platforms}</span>}
+          {fieldErrors.platforms && (
+            <span style={styles.errorText}>{fieldErrors.platforms}</span>
+          )}
         </section>
 
         <section style={styles.section}>
-          <h2 style={styles.postTitle}>{t('createPost.postLabel')}</h2>
+          <h2 style={styles.postTitle}>{t("createPost.postLabel")}</h2>
           <textarea
             value={content}
             onChange={(event) => {
@@ -267,13 +296,15 @@ export function CreatePostPage() {
                 setFieldErrors((prev) => ({ ...prev, content: undefined }));
               }
             }}
-            placeholder={t('createPost.postPlaceholder')}
+            placeholder={t("createPost.postPlaceholder")}
             style={{
               ...styles.textarea,
               ...(fieldErrors.content ? styles.textareaError : {}),
             }}
           />
-          {fieldErrors.content && <span style={styles.errorText}>{fieldErrors.content}</span>}
+          {fieldErrors.content && (
+            <span style={styles.errorText}>{fieldErrors.content}</span>
+          )}
 
           <input
             ref={fileInputRef}
@@ -290,13 +321,16 @@ export function CreatePostPage() {
             onClick={() => fileInputRef.current?.click()}
           >
             <Icon name="attachment" size={18} color={colors.neutral[90]} />
-            <span>{t('createPost.addFiles')}</span>
+            <span>{t("createPost.addFiles")}</span>
           </button>
 
           {attachments.length > 0 && (
             <div style={styles.attachmentsList}>
               {attachments.map((file, index) => (
-                <div key={`${file.name}-${index}`} style={styles.attachmentItem}>
+                <div
+                  key={`${file.name}-${index}`}
+                  style={styles.attachmentItem}
+                >
                   <div style={styles.attachmentInfo}>
                     <Icon name="image" size={16} color={colors.neutral[80]} />
                     <span style={styles.attachmentName}>{file.name}</span>
@@ -305,7 +339,9 @@ export function CreatePostPage() {
                     type="button"
                     style={styles.iconActionButton}
                     onClick={() => removeAttachment(index)}
-                    aria-label={t('createPost.aria.removeAttachment', { fileName: file.name })}
+                    aria-label={t("createPost.aria.removeAttachment", {
+                      fileName: file.name,
+                    })}
                   >
                     <Icon name="close" size={14} color={colors.neutral[80]} />
                   </button>
@@ -316,7 +352,9 @@ export function CreatePostPage() {
         </section>
 
         {submitError && <div style={styles.errorBanner}>{submitError}</div>}
-        {successMessage && <div style={styles.successBanner}>{successMessage}</div>}
+        {successMessage && (
+          <div style={styles.successBanner}>{successMessage}</div>
+        )}
 
         <div style={styles.publishRow}>
           <button
@@ -328,22 +366,30 @@ export function CreatePostPage() {
             onClick={handlePublish}
             disabled={isSubmitting}
           >
-            {isSubmitting ? t('createPost.publishing') : t('createPost.publish')}
+            {isSubmitting
+              ? t("createPost.publishing")
+              : t("createPost.publish")}
           </button>
         </div>
       </div>
 
       <aside style={styles.sidePanel}>
         <div style={styles.previewPanelContent}>
-          <h2 style={styles.previewPanelTitle}>{t('createPost.preview.title')}</h2>
+          <h2 style={styles.previewPanelTitle}>
+            {t("createPost.preview.title")}
+          </h2>
 
           <section style={styles.previewSection}>
-            <h3 style={styles.previewSectionTitle}>{t('createPost.preview.unifiedTitle')}</h3>
+            <h3 style={styles.previewSectionTitle}>
+              {t("createPost.preview.unifiedTitle")}
+            </h3>
             <article style={styles.previewCard}>
               <div style={styles.previewCardHeader}>
-                <span style={styles.previewCardLabel}>{t('createPost.preview.unifiedLabel')}</span>
+                <span style={styles.previewCardLabel}>
+                  {t("createPost.preview.unifiedLabel")}
+                </span>
                 <span style={styles.previewMeta}>
-                  {t('createPost.preview.meta', {
+                  {t("createPost.preview.meta", {
                     chars: content.trim().length,
                     media: attachments.length,
                   })}
@@ -351,13 +397,16 @@ export function CreatePostPage() {
               </div>
 
               <p style={styles.previewContentText}>
-                {content.trim() || t('createPost.preview.startTyping')}
+                {content.trim() || t("createPost.preview.startTyping")}
               </p>
 
               {attachmentPreviews.length > 0 && (
                 <div style={styles.previewMediaGrid}>
                   {attachmentPreviews.map((preview, index) => (
-                    <div key={`${preview.file.name}-${index}`} style={styles.previewMediaTile}>
+                    <div
+                      key={`${preview.file.name}-${index}`}
+                      style={styles.previewMediaTile}
+                    >
                       {preview.isVideo ? (
                         <video
                           src={preview.url}
@@ -367,7 +416,11 @@ export function CreatePostPage() {
                           preload="metadata"
                         />
                       ) : (
-                        <img src={preview.url} alt={preview.file.name} style={styles.previewMedia} />
+                        <img
+                          src={preview.url}
+                          alt={preview.file.name}
+                          style={styles.previewMedia}
+                        />
                       )}
                     </div>
                   ))}
@@ -377,10 +430,14 @@ export function CreatePostPage() {
           </section>
 
           <section style={styles.previewSection}>
-            <h3 style={styles.previewSectionTitle}>{t('createPost.preview.platformTitle')}</h3>
+            <h3 style={styles.previewSectionTitle}>
+              {t("createPost.preview.platformTitle")}
+            </h3>
 
             {selectedPlatformItems.length === 0 ? (
-              <div style={styles.previewEmptyState}>{t('createPost.preview.platformEmpty')}</div>
+              <div style={styles.previewEmptyState}>
+                {t("createPost.preview.platformEmpty")}
+              </div>
             ) : (
               <div style={styles.platformPreviewList}>
                 {selectedPlatformItems.map((platform) => (
@@ -388,39 +445,52 @@ export function CreatePostPage() {
                     <div style={styles.platformPreviewHeader}>
                       <div style={styles.platformPreviewTitleRow}>
                         <Icon name={platform.icon} size={16} />
-                        <span style={styles.platformPreviewTitle}>{platform.label}</span>
+                        <span style={styles.platformPreviewTitle}>
+                          {platform.label}
+                        </span>
                       </div>
-                      <span style={styles.previewMeta}>{t('createPost.preview.livePreview')}</span>
+                      <span style={styles.previewMeta}>
+                        {t("createPost.preview.livePreview")}
+                      </span>
                     </div>
 
                     <p style={styles.platformPreviewText}>
                       {content.trim() ||
-                        t('createPost.preview.writeToPlatform', { platform: platform.label })}
+                        t("createPost.preview.writeToPlatform", {
+                          platform: platform.label,
+                        })}
                     </p>
 
                     {attachmentPreviews.length > 0 && (
                       <div style={styles.platformMediaRow}>
-                        {attachmentPreviews.slice(0, 3).map((preview, index) => (
-                          <div key={`${platform.id}-${preview.file.name}-${index}`} style={styles.platformMediaThumbWrap}>
-                            {preview.isVideo ? (
-                              <video
-                                src={preview.url}
-                                style={styles.platformMediaThumb}
-                                muted
-                                playsInline
-                                preload="metadata"
-                              />
-                            ) : (
-                              <img
-                                src={preview.url}
-                                alt={preview.file.name}
-                                style={styles.platformMediaThumb}
-                              />
-                            )}
-                          </div>
-                        ))}
+                        {attachmentPreviews
+                          .slice(0, 3)
+                          .map((preview, index) => (
+                            <div
+                              key={`${platform.id}-${preview.file.name}-${index}`}
+                              style={styles.platformMediaThumbWrap}
+                            >
+                              {preview.isVideo ? (
+                                <video
+                                  src={preview.url}
+                                  style={styles.platformMediaThumb}
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                />
+                              ) : (
+                                <img
+                                  src={preview.url}
+                                  alt={preview.file.name}
+                                  style={styles.platformMediaThumb}
+                                />
+                              )}
+                            </div>
+                          ))}
                         {attachmentPreviews.length > 3 && (
-                          <div style={styles.extraMediaCount}>+{attachmentPreviews.length - 3}</div>
+                          <div style={styles.extraMediaCount}>
+                            +{attachmentPreviews.length - 3}
+                          </div>
                         )}
                       </div>
                     )}
@@ -437,30 +507,30 @@ export function CreatePostPage() {
 
 const styles: Record<string, CSSProperties> = {
   page: {
-    minHeight: '100vh',
+    minHeight: "100vh",
     backgroundColor: colors.neutral[30],
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'stretch',
+    display: "flex",
+    flexWrap: "wrap",
+    alignItems: "stretch",
     gap: spacing[4],
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
   },
   mainPanel: {
-    flex: '1 1 48rem',
-    minWidth: '18rem',
-    maxWidth: '60rem',
+    flex: "1 1 48rem",
+    minWidth: "18rem",
+    maxWidth: "60rem",
     padding: `${spacing[6]} ${spacing[8]} ${spacing[4]}`,
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
   },
   title: {
     ...typography.typeStyles.headingLSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.primary[700],
     margin: 0,
   },
   subtitle: {
     ...typography.typeStyles.bodyM,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[80],
     margin: `${spacing[1]} 0 ${spacing[7]}`,
   },
@@ -468,24 +538,24 @@ const styles: Record<string, CSSProperties> = {
     marginBottom: spacing[7],
   },
   sectionHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: spacing[3],
   },
   sectionTitle: {
     ...typography.typeStyles.headingSSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.neutral[90],
     margin: 0,
   },
   clearButton: {
     ...typography.typeStyles.linkS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[80],
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
+    background: "none",
+    border: "none",
+    cursor: "pointer",
     padding: 0,
   },
   platformPickerBox: {
@@ -495,17 +565,17 @@ const styles: Record<string, CSSProperties> = {
     padding: spacing[2],
   },
   platformChips: {
-    display: 'flex',
+    display: "flex",
     gap: spacing[2],
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    alignItems: "center",
+    flexWrap: "wrap",
   },
   platformChip: {
-    display: 'inline-flex',
-    alignItems: 'center',
+    display: "inline-flex",
+    alignItems: "center",
     gap: spacing[1.5],
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
     backgroundColor: colors.neutral[30],
     border: `1px solid ${colors.neutral[50]}`,
@@ -513,115 +583,115 @@ const styles: Record<string, CSSProperties> = {
     padding: `${spacing[1]} ${spacing[2]}`,
   },
   iconActionButton: {
-    width: '1.75rem',
-    height: '1.75rem',
+    width: "1.75rem",
+    height: "1.75rem",
     borderRadius: borderRadius.full,
-    border: 'none',
+    border: "none",
     background: colors.transparent,
-    cursor: 'pointer',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    cursor: "pointer",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   availablePlatformsRow: {
     marginTop: spacing[2],
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     gap: spacing[2],
   },
   availablePlatformButton: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
     backgroundColor: colors.neutral[20],
     border: `1px solid ${colors.neutral[50]}`,
     borderRadius: borderRadius.full,
     padding: `${spacing[1]} ${spacing[2.5]}`,
-    display: 'inline-flex',
-    alignItems: 'center',
+    display: "inline-flex",
+    alignItems: "center",
     gap: spacing[1.5],
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   postTitle: {
     ...typography.typeStyles.headingSSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.black,
     margin: 0,
     marginBottom: spacing[3],
   },
   textarea: {
-    width: '100%',
-    minHeight: '12rem',
-    maxHeight: '16rem',
-    resize: 'vertical',
+    width: "100%",
+    minHeight: "12rem",
+    maxHeight: "16rem",
+    resize: "vertical",
     ...typography.typeStyles.bodyM,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
     backgroundColor: colors.white,
     border: `1px solid ${colors.neutral[60]}`,
     borderRadius: borderRadius.md,
     padding: spacing[3],
-    boxSizing: 'border-box',
-    outline: 'none',
+    boxSizing: "border-box",
+    outline: "none",
   },
   textareaError: {
     borderColor: colors.error.default,
   },
   hiddenInput: {
-    display: 'none',
+    display: "none",
   },
   addFilesButton: {
     marginTop: spacing[3],
-    display: 'inline-flex',
-    alignItems: 'center',
+    display: "inline-flex",
+    alignItems: "center",
     gap: spacing[1.5],
     ...typography.typeStyles.bodyM,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
-    background: 'none',
-    border: 'none',
+    background: "none",
+    border: "none",
     padding: 0,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   attachmentsList: {
     marginTop: spacing[3],
-    display: 'grid',
+    display: "grid",
     gap: spacing[2],
   },
   attachmentItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: colors.white,
     border: `1px solid ${colors.neutral[60]}`,
     borderRadius: borderRadius.md,
     padding: `${spacing[1.5]} ${spacing[2]}`,
   },
   attachmentInfo: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: spacing[2],
     minWidth: 0,
   },
   attachmentName: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    maxWidth: '28rem',
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "28rem",
   },
   errorText: {
-    display: 'block',
+    display: "block",
     marginTop: spacing[1.5],
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.error.default,
   },
   errorBanner: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.error.dark,
     backgroundColor: colors.error.light,
     border: `1px solid ${colors.error.default}`,
@@ -631,7 +701,7 @@ const styles: Record<string, CSSProperties> = {
   },
   successBanner: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.success.dark,
     backgroundColor: colors.success.light,
     border: `1px solid ${colors.success.default}`,
@@ -640,56 +710,56 @@ const styles: Record<string, CSSProperties> = {
     marginBottom: spacing[3],
   },
   publishRow: {
-    display: 'flex',
-    justifyContent: 'flex-end',
+    display: "flex",
+    justifyContent: "flex-end",
     paddingBottom: spacing[4],
   },
   publishButton: {
     ...typography.typeStyles.bodyMSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.white,
     backgroundColor: colors.primary[500],
-    border: 'none',
+    border: "none",
     borderRadius: borderRadius.md,
     padding: `${spacing[2]} ${spacing[4]}`,
-    cursor: 'pointer',
+    cursor: "pointer",
     boxShadow: shadows.sm,
   },
   publishButtonDisabled: {
     opacity: 0.7,
-    cursor: 'not-allowed',
+    cursor: "not-allowed",
   },
   sidePanel: {
-    flex: '1 1 18rem',
-    minWidth: '15rem',
-    maxWidth: '26rem',
+    flex: "1 1 18rem",
+    minWidth: "15rem",
+    maxWidth: "26rem",
     backgroundColor: colors.neutral[50],
     borderLeft: `1px solid ${colors.neutral[60]}`,
     padding: `${spacing[5]} ${spacing[4]}`,
-    boxSizing: 'border-box',
-    position: 'sticky',
+    boxSizing: "border-box",
+    position: "sticky",
     top: 0,
-    alignSelf: 'flex-start',
-    maxHeight: '100vh',
-    overflowY: 'auto',
+    alignSelf: "flex-start",
+    maxHeight: "100vh",
+    overflowY: "auto",
   },
   previewPanelContent: {
-    display: 'grid',
+    display: "grid",
     gap: spacing[4],
   },
   previewPanelTitle: {
     ...typography.typeStyles.headingMSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.neutral[100],
     margin: 0,
   },
   previewSection: {
-    display: 'grid',
+    display: "grid",
     gap: spacing[2],
   },
   previewSectionTitle: {
     ...typography.typeStyles.bodyMSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.neutral[90],
     margin: 0,
   },
@@ -698,55 +768,55 @@ const styles: Record<string, CSSProperties> = {
     border: `1px solid ${colors.neutral[60]}`,
     borderRadius: borderRadius.lg,
     padding: spacing[3],
-    display: 'grid',
+    display: "grid",
     gap: spacing[2],
     boxShadow: shadows.sm,
   },
   previewCardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: spacing[2],
   },
   previewCardLabel: {
     ...typography.typeStyles.bodySSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.neutral[90],
   },
   previewMeta: {
     ...typography.typeStyles.label,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[70],
   },
   previewContentText: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
     margin: 0,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
   },
   previewMediaGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: spacing[2],
   },
   previewMediaTile: {
     borderRadius: borderRadius.md,
-    overflow: 'hidden',
+    overflow: "hidden",
     border: `1px solid ${colors.neutral[50]}`,
     backgroundColor: colors.neutral[30],
-    aspectRatio: '4 / 3',
+    aspectRatio: "4 / 3",
   },
   previewMedia: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
   },
   previewEmptyState: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[80],
     backgroundColor: colors.white,
     border: `1px dashed ${colors.neutral[60]}`,
@@ -754,7 +824,7 @@ const styles: Record<string, CSSProperties> = {
     padding: spacing[3],
   },
   platformPreviewList: {
-    display: 'grid',
+    display: "grid",
     gap: spacing[2],
   },
   platformPreviewCard: {
@@ -762,63 +832,63 @@ const styles: Record<string, CSSProperties> = {
     border: `1px solid ${colors.neutral[60]}`,
     borderRadius: borderRadius.md,
     padding: spacing[3],
-    display: 'grid',
+    display: "grid",
     gap: spacing[2],
   },
   platformPreviewHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: spacing[2],
   },
   platformPreviewTitleRow: {
-    display: 'inline-flex',
-    alignItems: 'center',
+    display: "inline-flex",
+    alignItems: "center",
     gap: spacing[1.5],
   },
   platformPreviewTitle: {
     ...typography.typeStyles.bodySSemiBold,
-    fontFamily: typography.fontFamily.generalSans.join(', '),
+    fontFamily: typography.fontFamily.generalSans.join(", "),
     color: colors.neutral[90],
   },
   platformPreviewText: {
     ...typography.typeStyles.bodyS,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[90],
     margin: 0,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-word',
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word",
   },
   platformMediaRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: spacing[1.5],
   },
   platformMediaThumbWrap: {
-    width: '3rem',
-    height: '3rem',
+    width: "3rem",
+    height: "3rem",
     borderRadius: borderRadius.sm,
-    overflow: 'hidden',
+    overflow: "hidden",
     border: `1px solid ${colors.neutral[50]}`,
     backgroundColor: colors.neutral[30],
     flexShrink: 0,
   },
   platformMediaThumb: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block',
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
   },
   extraMediaCount: {
     ...typography.typeStyles.label,
-    fontFamily: typography.fontFamily.inter.join(', '),
+    fontFamily: typography.fontFamily.inter.join(", "),
     color: colors.neutral[80],
     border: `1px solid ${colors.neutral[60]}`,
     borderRadius: borderRadius.full,
     padding: `0 ${spacing[1.5]}`,
-    height: '1.5rem',
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: "1.5rem",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 };

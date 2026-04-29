@@ -1,4 +1,4 @@
-import type { OAuthPlatform } from '@/types';
+import type { OAuthPlatform } from "@/types";
 
 export function getOAuthStartPath(platform: OAuthPlatform): string {
   return `/api/auth/${platform}`;

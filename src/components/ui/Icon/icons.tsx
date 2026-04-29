@@ -10,24 +10,24 @@
  */
 
 // ── Navigation icons (Material Design — from assets/action & editor) ───────
-import DashboardIcon from '@/assets/action/dashboard.svg?react';
-import EditIcon from '@/assets/editor/mode_edit.svg?react';
-import HistoryIcon from '@/assets/action/history.svg?react';
-import SettingsIcon from '@/assets/action/settings.svg?react';
+import DashboardIcon from "@/assets/action/dashboard.svg?react";
+import EditIcon from "@/assets/editor/mode_edit.svg?react";
+import HistoryIcon from "@/assets/action/history.svg?react";
+import SettingsIcon from "@/assets/action/settings.svg?react";
 
 // ── Action icons ───────────────────────────────────────────────────────────
-import VisibilityIcon from '@/assets/action/visibility.svg?react';
-import VisibilityOffIcon from '@/assets/action/visibility_off.svg?react';
-import AddIcon from '@/assets/content/add.svg?react';
-import CloseIcon from '@/assets/navigation/close.svg?react';
-import AttachmentIcon from '@/assets/file/attachment.svg?react';
-import ImageIcon from '@/assets/image/image.svg?react';
+import VisibilityIcon from "@/assets/action/visibility.svg?react";
+import VisibilityOffIcon from "@/assets/action/visibility_off.svg?react";
+import AddIcon from "@/assets/content/add.svg?react";
+import CloseIcon from "@/assets/navigation/close.svg?react";
+import AttachmentIcon from "@/assets/file/attachment.svg?react";
+import ImageIcon from "@/assets/image/image.svg?react";
 
 // ── Social / platform icons (branded — from assets/social_icons) ───────────
-import FacebookIcon from '@/assets/social_icons/Facebook/Original.svg?react';
-import InstagramIcon from '@/assets/social_icons/Instagram/Original.svg?react';
-import YoutubeIcon from '@/assets/social_icons/YouTube/Original.svg?react';
-import TikTokIcon from '@/assets/social_icons/TikTok/Original.svg?react';
+import FacebookIcon from "@/assets/social_icons/Facebook/Original.svg?react";
+import InstagramIcon from "@/assets/social_icons/Instagram/Original.svg?react";
+import YoutubeIcon from "@/assets/social_icons/YouTube/Original.svg?react";
+import TikTokIcon from "@/assets/social_icons/TikTok/Original.svg?react";
 
 // ── Map for lookup by name ─────────────────────────────────────────────────
 

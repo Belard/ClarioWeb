@@ -20,7 +20,7 @@ export interface AuthResponse {
   user: User;
 }
 
-export type PostStatus = 'draft' | 'scheduled' | 'published';
+export type PostStatus = "draft" | "scheduled" | "published";
 
 export interface Post {
   id: string;
@@ -35,9 +35,9 @@ export interface Post {
   updatedAt: string;
 }
 
-export type PostType = 'normal' | 'short' | 'story';
+export type PostType = "normal" | "short" | "story";
 
-export type PrivacyLevel = 'public' | 'followers' | 'friends' | 'private';
+export type PrivacyLevel = "public" | "followers" | "friends" | "private";
 
 export interface CreatePostRequest {
   content: string;
@@ -64,9 +64,14 @@ export interface UploadedMedia {
   filename?: string;
 }
 
-export type OAuthPlatform = 'facebook' | 'instagram' | 'tiktok' | 'twitter' | 'youtube';
+export type OAuthPlatform =
+  | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "twitter"
+  | "youtube";
 
-export type PublishPlatform = 'facebook' | 'instagram' | 'youtube' | 'tiktok';
+export type PublishPlatform = "facebook" | "instagram" | "youtube" | "tiktok";
 
 export interface CredentialsStatusItem {
   platform: OAuthPlatform;

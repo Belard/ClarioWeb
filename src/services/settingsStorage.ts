@@ -1,25 +1,28 @@
-import type { PostDefaults } from '@/types';
-import { ApiError, request } from './api';
+import type { PostDefaults } from "@/types";
+import { ApiError, request } from "./api";
 
-const POST_DEFAULTS_STORAGE_KEY = 'clario_post_defaults';
-const POST_DEFAULTS_ENDPOINT = '/api/settings/post-defaults';
+const POST_DEFAULTS_STORAGE_KEY = "clario_post_defaults";
+const POST_DEFAULTS_ENDPOINT = "/api/settings/post-defaults";
 
 const FALLBACK_DEFAULTS: PostDefaults = {
-  post_type: 'normal',
-  privacy_level: 'public',
+  post_type: "normal",
+  privacy_level: "public",
   is_sponsored: false,
-  platforms: ['instagram'],
+  platforms: ["instagram"],
 };
 
 let supportsRemoteDefaults: boolean | null = null;
 
-function normalizeDefaults(input: Partial<PostDefaults> | null | undefined): PostDefaults {
+function normalizeDefaults(
+  input: Partial<PostDefaults> | null | undefined,
+): PostDefaults {
   const postType = input?.post_type ?? FALLBACK_DEFAULTS.post_type;
   const privacyLevel = input?.privacy_level ?? FALLBACK_DEFAULTS.privacy_level;
   const isSponsored = input?.is_sponsored ?? FALLBACK_DEFAULTS.is_sponsored;
-  const platforms = Array.isArray(input?.platforms) && input.platforms.length > 0
-    ? input.platforms
-    : FALLBACK_DEFAULTS.platforms;
+  const platforms =
+    Array.isArray(input?.platforms) && input.platforms.length > 0
+      ? input.platforms
+      : FALLBACK_DEFAULTS.platforms;
 
   return {
     post_type: postType,
@@ -57,10 +60,13 @@ export async function loadPostDefaults(): Promise<PostDefaults> {
   }
 
   try {
-    const remoteDefaults = await request<Partial<PostDefaults>>(POST_DEFAULTS_ENDPOINT, {
-      method: 'GET',
-      timeoutMs: 8000,
-    });
+    const remoteDefaults = await request<Partial<PostDefaults>>(
+      POST_DEFAULTS_ENDPOINT,
+      {
+        method: "GET",
+        timeoutMs: 8000,
+      },
+    );
 
     supportsRemoteDefaults = true;
     const normalized = normalizeDefaults(remoteDefaults);
@@ -85,7 +91,7 @@ export async function savePostDefaults(defaults: PostDefaults): Promise<void> {
 
   try {
     await request(POST_DEFAULTS_ENDPOINT, {
-      method: 'PUT',
+      method: "PUT",
       body: normalized,
       timeoutMs: 8000,
     });

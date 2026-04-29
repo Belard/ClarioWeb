@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
-import type { CSSProperties } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Icon } from '@/components/ui/Icon/Icon';
-import { useAuth } from '@/hooks';
-import { credentialsService, oauthService, settingsStorage } from '@/services';
-import { colors, spacing, typography } from '@/theme';
+import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
+import { Icon } from "@/components/ui/Icon/Icon";
+import { useAuth } from "@/hooks";
+import { credentialsService, oauthService, settingsStorage } from "@/services";
+import { colors, spacing, typography } from "@/theme";
 import type {
   CredentialsStatusItem,
   CredentialsStatusResponse,
@@ -13,7 +13,7 @@ import type {
   PostType,
   PrivacyLevel,
   PublishPlatform,
-} from '@/types';
+} from "@/types";
 
 type PlatformState = {
   id: OAuthPlatform;
@@ -21,26 +21,51 @@ type PlatformState = {
   expiresAt?: string;
 };
 
-const OAUTH_PLATFORMS: Array<{ id: OAuthPlatform; labelKey: string; icon?: 'facebook' | 'instagram' | 'youtube' | 'tiktok' }> = [
-  { id: 'facebook', labelKey: 'settings.platforms.items.facebook', icon: 'facebook' },
-  { id: 'instagram', labelKey: 'settings.platforms.items.instagram', icon: 'instagram' },
-  { id: 'tiktok', labelKey: 'settings.platforms.items.tiktok', icon: 'tiktok' },
-  { id: 'twitter', labelKey: 'settings.platforms.items.twitter' },
-  { id: 'youtube', labelKey: 'settings.platforms.items.youtube', icon: 'youtube' },
+const OAUTH_PLATFORMS: Array<{
+  id: OAuthPlatform;
+  labelKey: string;
+  icon?: "facebook" | "instagram" | "youtube" | "tiktok";
+}> = [
+  {
+    id: "facebook",
+    labelKey: "settings.platforms.items.facebook",
+    icon: "facebook",
+  },
+  {
+    id: "instagram",
+    labelKey: "settings.platforms.items.instagram",
+    icon: "instagram",
+  },
+  { id: "tiktok", labelKey: "settings.platforms.items.tiktok", icon: "tiktok" },
+  { id: "twitter", labelKey: "settings.platforms.items.twitter" },
+  {
+    id: "youtube",
+    labelKey: "settings.platforms.items.youtube",
+    icon: "youtube",
+  },
 ];
 
 const PUBLISH_PLATFORMS: Array<{ id: PublishPlatform; labelKey: string }> = [
-  { id: 'facebook', labelKey: 'settings.platforms.items.facebook' },
-  { id: 'instagram', labelKey: 'settings.platforms.items.instagram' },
-  { id: 'youtube', labelKey: 'settings.platforms.items.youtube' },
-  { id: 'tiktok', labelKey: 'settings.platforms.items.tiktok' },
+  { id: "facebook", labelKey: "settings.platforms.items.facebook" },
+  { id: "instagram", labelKey: "settings.platforms.items.instagram" },
+  { id: "youtube", labelKey: "settings.platforms.items.youtube" },
+  { id: "tiktok", labelKey: "settings.platforms.items.tiktok" },
 ];
 
-const POST_TYPE_OPTIONS: PostType[] = ['normal', 'short', 'story'];
-const PRIVACY_OPTIONS: PrivacyLevel[] = ['public', 'followers', 'friends', 'private'];
+const POST_TYPE_OPTIONS: PostType[] = ["normal", "short", "story"];
+const PRIVACY_OPTIONS: PrivacyLevel[] = [
+  "public",
+  "followers",
+  "friends",
+  "private",
+];
 
-function normalizePlatformStatus(response: CredentialsStatusResponse): PlatformState[] {
-  const connectedFromArray = new Set(response.connected_platforms ?? response.platforms ?? []);
+function normalizePlatformStatus(
+  response: CredentialsStatusResponse,
+): PlatformState[] {
+  const connectedFromArray = new Set(
+    response.connected_platforms ?? response.platforms ?? [],
+  );
   const credentialsByPlatform = new Map<string, CredentialsStatusItem>(
     (response.credentials ?? []).map((item) => [item.platform, item]),
   );
@@ -68,23 +93,24 @@ export function SettingsPage() {
     OAUTH_PLATFORMS.map((platform) => ({ id: platform.id, connected: false })),
   );
   const [isLoadingPlatforms, setIsLoadingPlatforms] = useState(true);
-  const [platformError, setPlatformError] = useState('');
-  const [disconnectingPlatform, setDisconnectingPlatform] = useState<OAuthPlatform | null>(null);
+  const [platformError, setPlatformError] = useState("");
+  const [disconnectingPlatform, setDisconnectingPlatform] =
+    useState<OAuthPlatform | null>(null);
 
   const [defaults, setDefaults] = useState<PostDefaults | null>(null);
   const [isLoadingDefaults, setIsLoadingDefaults] = useState(true);
   const [isSavingDefaults, setIsSavingDefaults] = useState(false);
-  const [defaultsMessage, setDefaultsMessage] = useState('');
+  const [defaultsMessage, setDefaultsMessage] = useState("");
 
   async function loadPlatforms() {
     setIsLoadingPlatforms(true);
-    setPlatformError('');
+    setPlatformError("");
 
     try {
       const response = await credentialsService.getConnectedPlatforms();
       setPlatforms(normalizePlatformStatus(response));
     } catch {
-      setPlatformError(t('settings.platforms.loadError'));
+      setPlatformError(t("settings.platforms.loadError"));
     } finally {
       setIsLoadingPlatforms(false);
     }
@@ -92,13 +118,13 @@ export function SettingsPage() {
 
   async function loadDefaults() {
     setIsLoadingDefaults(true);
-    setDefaultsMessage('');
+    setDefaultsMessage("");
 
     try {
       const savedDefaults = await settingsStorage.loadPostDefaults();
       setDefaults(savedDefaults);
     } catch {
-      setDefaultsMessage(t('settings.defaults.loadError'));
+      setDefaultsMessage(t("settings.defaults.loadError"));
     } finally {
       setIsLoadingDefaults(false);
     }
@@ -117,19 +143,22 @@ export function SettingsPage() {
 
   async function disconnectPlatform(platform: OAuthPlatform) {
     setDisconnectingPlatform(platform);
-    setPlatformError('');
+    setPlatformError("");
 
     try {
       await credentialsService.disconnectPlatform({ platform });
       await loadPlatforms();
     } catch {
-      setPlatformError(t('settings.platforms.disconnectError'));
+      setPlatformError(t("settings.platforms.disconnectError"));
     } finally {
       setDisconnectingPlatform(null);
     }
   }
 
-  function updateDefaults<K extends keyof PostDefaults>(key: K, value: PostDefaults[K]) {
+  function updateDefaults<K extends keyof PostDefaults>(
+    key: K,
+    value: PostDefaults[K],
+  ) {
     if (!defaultsReady) {
       return;
     }
@@ -162,13 +191,13 @@ export function SettingsPage() {
     }
 
     setIsSavingDefaults(true);
-    setDefaultsMessage('');
+    setDefaultsMessage("");
 
     try {
       await settingsStorage.savePostDefaults(defaultsReady);
-      setDefaultsMessage(t('settings.defaults.saved'));
+      setDefaultsMessage(t("settings.defaults.saved"));
     } catch {
-      setDefaultsMessage(t('settings.defaults.saveError'));
+      setDefaultsMessage(t("settings.defaults.saveError"));
     } finally {
       setIsSavingDefaults(false);
     }
@@ -177,43 +206,59 @@ export function SettingsPage() {
   return (
     <div style={styles.page}>
       <header style={styles.header}>
-        <h1 style={styles.title}>{t('settings.title')}</h1>
-        <p style={styles.subtitle}>{t('settings.subtitle')}</p>
+        <h1 style={styles.title}>{t("settings.title")}</h1>
+        <p style={styles.subtitle}>{t("settings.subtitle")}</p>
       </header>
 
       <section style={styles.card}>
-        <h2 style={styles.sectionTitle}>{t('settings.platforms.title')}</h2>
-        <p style={styles.sectionDescription}>{t('settings.platforms.description')}</p>
+        <h2 style={styles.sectionTitle}>{t("settings.platforms.title")}</h2>
+        <p style={styles.sectionDescription}>
+          {t("settings.platforms.description")}
+        </p>
 
-        {isLoadingPlatforms ? <p style={styles.helperText}>{t('settings.common.loading')}</p> : null}
+        {isLoadingPlatforms ? (
+          <p style={styles.helperText}>{t("settings.common.loading")}</p>
+        ) : null}
         {platformError ? <p style={styles.errorText}>{platformError}</p> : null}
 
         <div style={styles.platformGrid}>
           {platforms.map((platform) => {
-            const platformMeta = OAUTH_PLATFORMS.find((item) => item.id === platform.id);
+            const platformMeta = OAUTH_PLATFORMS.find(
+              (item) => item.id === platform.id,
+            );
             const isDisconnecting = disconnectingPlatform === platform.id;
 
             return (
               <article key={platform.id} style={styles.platformCard}>
                 <div style={styles.platformHeader}>
                   <div style={styles.platformNameRow}>
-                    {platformMeta?.icon ? <Icon name={platformMeta.icon} size={16} /> : null}
-                    <span style={styles.platformName}>{t(platformMeta?.labelKey ?? '')}</span>
+                    {platformMeta?.icon ? (
+                      <Icon name={platformMeta.icon} size={16} />
+                    ) : null}
+                    <span style={styles.platformName}>
+                      {t(platformMeta?.labelKey ?? "")}
+                    </span>
                   </div>
                   <span
                     style={{
                       ...styles.statusBadge,
-                      ...(platform.connected ? styles.statusConnected : styles.statusDisconnected),
+                      ...(platform.connected
+                        ? styles.statusConnected
+                        : styles.statusDisconnected),
                     }}
                   >
                     {platform.connected
-                      ? t('settings.platforms.connected')
-                      : t('settings.platforms.disconnected')}
+                      ? t("settings.platforms.connected")
+                      : t("settings.platforms.disconnected")}
                   </span>
                 </div>
 
                 {platform.expiresAt ? (
-                  <p style={styles.expiryText}>{t('settings.platforms.expiresAt', { value: platform.expiresAt })}</p>
+                  <p style={styles.expiryText}>
+                    {t("settings.platforms.expiresAt", {
+                      value: platform.expiresAt,
+                    })}
+                  </p>
                 ) : null}
 
                 <div style={styles.actionsRow}>
@@ -222,7 +267,7 @@ export function SettingsPage() {
                     style={styles.secondaryButton}
                     onClick={() => connectPlatform(platform.id)}
                   >
-                    {t('settings.platforms.connect')}
+                    {t("settings.platforms.connect")}
                   </button>
 
                   <button
@@ -235,8 +280,8 @@ export function SettingsPage() {
                     disabled={!platform.connected || isDisconnecting}
                   >
                     {isDisconnecting
-                      ? t('settings.common.loading')
-                      : t('settings.platforms.disconnect')}
+                      ? t("settings.common.loading")
+                      : t("settings.platforms.disconnect")}
                   </button>
                 </div>
               </article>
@@ -246,19 +291,23 @@ export function SettingsPage() {
       </section>
 
       <section style={styles.card}>
-        <h2 style={styles.sectionTitle}>{t('settings.defaults.title')}</h2>
-        <p style={styles.sectionDescription}>{t('settings.defaults.description')}</p>
+        <h2 style={styles.sectionTitle}>{t("settings.defaults.title")}</h2>
+        <p style={styles.sectionDescription}>
+          {t("settings.defaults.description")}
+        </p>
 
         {isLoadingDefaults || !defaultsReady ? (
-          <p style={styles.helperText}>{t('settings.common.loading')}</p>
+          <p style={styles.helperText}>{t("settings.common.loading")}</p>
         ) : (
           <div style={styles.defaultsGrid}>
             <label style={styles.fieldLabel}>
-              {t('settings.defaults.postType')}
+              {t("settings.defaults.postType")}
               <select
                 style={styles.selectField}
                 value={defaultsReady.post_type}
-                onChange={(event) => updateDefaults('post_type', event.target.value as PostType)}
+                onChange={(event) =>
+                  updateDefaults("post_type", event.target.value as PostType)
+                }
               >
                 {POST_TYPE_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -269,11 +318,16 @@ export function SettingsPage() {
             </label>
 
             <label style={styles.fieldLabel}>
-              {t('settings.defaults.privacy')}
+              {t("settings.defaults.privacy")}
               <select
                 style={styles.selectField}
                 value={defaultsReady.privacy_level}
-                onChange={(event) => updateDefaults('privacy_level', event.target.value as PrivacyLevel)}
+                onChange={(event) =>
+                  updateDefaults(
+                    "privacy_level",
+                    event.target.value as PrivacyLevel,
+                  )
+                }
               >
                 {PRIVACY_OPTIONS.map((option) => (
                   <option key={option} value={option}>
@@ -287,16 +341,22 @@ export function SettingsPage() {
               <input
                 type="checkbox"
                 checked={defaultsReady.is_sponsored}
-                onChange={(event) => updateDefaults('is_sponsored', event.target.checked)}
+                onChange={(event) =>
+                  updateDefaults("is_sponsored", event.target.checked)
+                }
               />
-              <span>{t('settings.defaults.sponsored')}</span>
+              <span>{t("settings.defaults.sponsored")}</span>
             </label>
 
             <div style={styles.platformSelectionBlock}>
-              <span style={styles.fieldLabelText}>{t('settings.defaults.platforms')}</span>
+              <span style={styles.fieldLabelText}>
+                {t("settings.defaults.platforms")}
+              </span>
               <div style={styles.platformToggleRow}>
                 {PUBLISH_PLATFORMS.map((platform) => {
-                  const isActive = defaultsReady.platforms.includes(platform.id);
+                  const isActive = defaultsReady.platforms.includes(
+                    platform.id,
+                  );
 
                   return (
                     <button
@@ -325,26 +385,32 @@ export function SettingsPage() {
                 disabled={isSavingDefaults}
                 onClick={saveDefaults}
               >
-                {isSavingDefaults ? t('settings.defaults.saving') : t('settings.defaults.save')}
+                {isSavingDefaults
+                  ? t("settings.defaults.saving")
+                  : t("settings.defaults.save")}
               </button>
-              {defaultsMessage ? <span style={styles.helperText}>{defaultsMessage}</span> : null}
+              {defaultsMessage ? (
+                <span style={styles.helperText}>{defaultsMessage}</span>
+              ) : null}
             </div>
           </div>
         )}
       </section>
 
       <section style={styles.card}>
-        <h2 style={styles.sectionTitle}>{t('settings.account.title')}</h2>
-        <p style={styles.sectionDescription}>{t('settings.account.description')}</p>
+        <h2 style={styles.sectionTitle}>{t("settings.account.title")}</h2>
+        <p style={styles.sectionDescription}>
+          {t("settings.account.description")}
+        </p>
 
         <dl style={styles.accountList}>
           <div style={styles.accountRow}>
-            <dt style={styles.accountLabel}>{t('settings.account.name')}</dt>
-            <dd style={styles.accountValue}>{user?.name ?? '-'}</dd>
+            <dt style={styles.accountLabel}>{t("settings.account.name")}</dt>
+            <dd style={styles.accountValue}>{user?.name ?? "-"}</dd>
           </div>
           <div style={styles.accountRow}>
-            <dt style={styles.accountLabel}>{t('settings.account.email')}</dt>
-            <dd style={styles.accountValue}>{user?.email ?? '-'}</dd>
+            <dt style={styles.accountLabel}>{t("settings.account.email")}</dt>
+            <dd style={styles.accountValue}>{user?.email ?? "-"}</dd>
           </div>
         </dl>
       </section>
@@ -354,10 +420,10 @@ export function SettingsPage() {
 
 const styles: Record<string, CSSProperties> = {
   page: {
-    minHeight: '100vh',
+    minHeight: "100vh",
     padding: spacing[8],
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[5],
   },
   header: {
@@ -365,8 +431,8 @@ const styles: Record<string, CSSProperties> = {
   },
   title: {
     margin: 0,
-    fontSize: typography.fontSize['3xl'],
-    fontFamily: typography.fontFamily.sans.join(', '),
+    fontSize: typography.fontSize["3xl"],
+    fontFamily: typography.fontFamily.sans.join(", "),
   },
   subtitle: {
     marginTop: spacing[2],
@@ -378,15 +444,15 @@ const styles: Record<string, CSSProperties> = {
     backgroundColor: colors.white,
     borderRadius: spacing[4],
     padding: spacing[5],
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[4],
   },
   sectionTitle: {
     margin: 0,
     color: colors.neutral[90],
     fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.sans.join(', '),
+    fontFamily: typography.fontFamily.sans.join(", "),
   },
   sectionDescription: {
     margin: 0,
@@ -404,27 +470,27 @@ const styles: Record<string, CSSProperties> = {
     fontSize: typography.fontSize.sm,
   },
   platformGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: spacing[3],
   },
   platformCard: {
     border: `1px solid ${colors.neutral[40]}`,
     borderRadius: spacing[3],
     padding: spacing[4],
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[3],
   },
   platformHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: spacing[2],
   },
   platformNameRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: spacing[2],
   },
   platformName: {
@@ -436,8 +502,8 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: spacing[2],
     padding: `${spacing[1]} ${spacing[2]}`,
     fontSize: typography.fontSize.label,
-    textTransform: 'uppercase',
-    letterSpacing: '0.03em',
+    textTransform: "uppercase",
+    letterSpacing: "0.03em",
   },
   statusConnected: {
     color: colors.success.dark,
@@ -453,10 +519,10 @@ const styles: Record<string, CSSProperties> = {
     fontSize: typography.fontSize.label,
   },
   actionsRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: spacing[2],
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   primaryButton: {
     border: `1px solid ${colors.primary[500]}`,
@@ -464,7 +530,7 @@ const styles: Record<string, CSSProperties> = {
     color: colors.white,
     borderRadius: spacing[2],
     padding: `${spacing[2]} ${spacing[3]}`,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   secondaryButton: {
     border: `1px solid ${colors.primary[500]}`,
@@ -472,7 +538,7 @@ const styles: Record<string, CSSProperties> = {
     color: colors.primary[500],
     borderRadius: spacing[2],
     padding: `${spacing[2]} ${spacing[3]}`,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   dangerButton: {
     border: `1px solid ${colors.error.default}`,
@@ -480,20 +546,20 @@ const styles: Record<string, CSSProperties> = {
     color: colors.error.default,
     borderRadius: spacing[2],
     padding: `${spacing[2]} ${spacing[3]}`,
-    cursor: 'pointer',
+    cursor: "pointer",
   },
   buttonDisabled: {
     opacity: 0.55,
-    cursor: 'not-allowed',
+    cursor: "not-allowed",
   },
   defaultsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: spacing[4],
   },
   fieldLabel: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[2],
     color: colors.neutral[90],
     fontSize: typography.fontSize.sm,
@@ -507,28 +573,28 @@ const styles: Record<string, CSSProperties> = {
   selectField: {
     border: `1px solid ${colors.neutral[50]}`,
     borderRadius: spacing[2],
-    minHeight: '2.5rem',
+    minHeight: "2.5rem",
     padding: `0 ${spacing[3]}`,
     fontSize: typography.fontSize.sm,
     color: colors.neutral[90],
     backgroundColor: colors.white,
   },
   checkboxRow: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
     gap: spacing[2],
     color: colors.neutral[90],
     fontSize: typography.fontSize.sm,
     marginTop: spacing[2],
   },
   platformSelectionBlock: {
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[2],
   },
   platformToggleRow: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
     gap: spacing[2],
   },
   chip: {
@@ -537,7 +603,7 @@ const styles: Record<string, CSSProperties> = {
     padding: `${spacing[1.5]} ${spacing[3]}`,
     backgroundColor: colors.white,
     color: colors.neutral[90],
-    cursor: 'pointer',
+    cursor: "pointer",
     fontSize: typography.fontSize.sm,
   },
   chipActive: {
@@ -547,13 +613,13 @@ const styles: Record<string, CSSProperties> = {
   },
   accountList: {
     margin: 0,
-    display: 'flex',
-    flexDirection: 'column',
+    display: "flex",
+    flexDirection: "column",
     gap: spacing[3],
   },
   accountRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
+    display: "flex",
+    justifyContent: "space-between",
     gap: spacing[4],
     paddingBottom: spacing[2],
     borderBottom: `1px solid ${colors.neutral[40]}`,
