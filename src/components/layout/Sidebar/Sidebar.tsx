@@ -84,10 +84,17 @@ export function Sidebar({
       <div style={styles.bottomSection}>
         {/* User info footer */}
         {user && (
-          <div style={styles.userFooter}>
-            <UserAvatar size={40} alt={user.name} />
-            <UserInfo name={user.name} subtitle={user.email} />
-          </div>
+          <button
+            type="button"
+            style={styles.userFooterButton}
+            onClick={() => onNavClick?.('settings')}
+            aria-label={t('sidebar.openSettings')}
+          >
+            <div style={styles.userFooter}>
+              <UserAvatar size={40} alt={user.name} />
+              <UserInfo name={user.name} subtitle={user.email} />
+            </div>
+          </button>
         )}
       </div>
     </aside>
@@ -132,6 +139,14 @@ const styles: Record<string, CSSProperties> = {
   },
   actionContainer: {
     padding: `${spacing[3]} ${spacing[3]}`,
+  },
+  userFooterButton: {
+    border: 'none',
+    background: 'transparent',
+    width: '100%',
+    padding: 0,
+    cursor: 'pointer',
+    textAlign: 'left',
   },
   userFooter: {
     display: 'flex',

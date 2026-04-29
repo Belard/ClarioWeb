@@ -3,15 +3,72 @@
     "nav": {
       "dashboard": "Dashboard",
       "createPost": "Create Post",
-      "history": "History"
+      "history": "History",
+      "settings": "Settings"
     },
     "platforms": "Platforms",
+    "openSettings": "Open settings",
     "action": {
       "createPost": "Create Post"
     }
   },
   "header": {
     "defaultSubtitle": "Pediatric Dentist"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your connections, publishing defaults, and account information.",
+    "common": {
+      "loading": "Loading..."
+    },
+    "platforms": {
+      "title": "Platform Connections",
+      "description": "Connect or disconnect social networks used for publishing.",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "expiresAt": "Expires: {{value}}",
+      "loadError": "Could not load platform status.",
+      "disconnectError": "Could not disconnect this platform.",
+      "items": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "twitter": "Twitter",
+        "youtube": "YouTube"
+      }
+    },
+    "defaults": {
+      "title": "Post Defaults",
+      "description": "Set default values used when creating posts.",
+      "postType": "Default post type",
+      "privacy": "Default privacy",
+      "sponsored": "Mark posts as sponsored by default",
+      "platforms": "Default platforms",
+      "save": "Save defaults",
+      "saving": "Saving...",
+      "saved": "Defaults saved.",
+      "loadError": "Could not load saved defaults.",
+      "saveError": "Could not save defaults.",
+      "types": {
+        "normal": "Normal",
+        "short": "Short",
+        "story": "Story"
+      },
+      "privacyOptions": {
+        "public": "Public",
+        "followers": "Followers",
+        "friends": "Friends",
+        "private": "Private"
+      }
+    },
+    "account": {
+      "title": "Account",
+      "description": "Profile details currently available from your authenticated session.",
+      "name": "Name",
+      "email": "Email"
+    }
   },
   "createPost": {
     "title": "Create New Post",

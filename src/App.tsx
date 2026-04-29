@@ -3,7 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/context';
 import { AppLayout, ProtectedRoute } from '@/components';
-import { DashboardPage, CreatePostPage, HistoryPage, LoginPage, SignUpPage } from '@/pages';
+import {
+  DashboardPage,
+  CreatePostPage,
+  HistoryPage,
+  LoginPage,
+  SignUpPage,
+  SettingsPage,
+} from '@/pages';
 import type { SidebarConfig } from '@/components';
 import './App.css';
 
@@ -17,9 +24,10 @@ function useSidebarConfig(): SidebarConfig {
 
   return {
     navItems: [
-      { id: 'dashboard',   label: t('sidebar.nav.dashboard'),   icon: 'dashboard' },
-      { id: 'create-post', label: t('sidebar.nav.createPost'),   icon: 'edit' },
-      { id: 'history',     label: t('sidebar.nav.history'),      icon: 'history' },
+      { id: 'dashboard', label: t('sidebar.nav.dashboard'), icon: 'dashboard' },
+      { id: 'create-post', label: t('sidebar.nav.createPost'), icon: 'edit' },
+      { id: 'history', label: t('sidebar.nav.history'), icon: 'history' },
+      { id: 'settings', label: t('sidebar.nav.settings'), icon: 'settings' },
     ],
     activeNavId: activeNav,
     onNavClick: setActiveNav,
@@ -46,6 +54,7 @@ function AuthenticatedApp() {
       {sidebarConfig.activeNavId === 'dashboard' && <DashboardPage />}
       {sidebarConfig.activeNavId === 'create-post' && <CreatePostPage />}
       {sidebarConfig.activeNavId === 'history' && <HistoryPage />}
+      {sidebarConfig.activeNavId === 'settings' && <SettingsPage />}
     </AppLayout>
   );
 }

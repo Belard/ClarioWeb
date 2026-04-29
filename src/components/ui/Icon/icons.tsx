@@ -13,6 +13,7 @@
 import DashboardIcon from '@/assets/action/dashboard.svg?react';
 import EditIcon from '@/assets/editor/mode_edit.svg?react';
 import HistoryIcon from '@/assets/action/history.svg?react';
+import SettingsIcon from '@/assets/action/settings.svg?react';
 
 // ── Action icons ───────────────────────────────────────────────────────────
 import VisibilityIcon from '@/assets/action/visibility.svg?react';
@@ -34,6 +35,7 @@ export const iconMap = {
   dashboard: DashboardIcon,
   edit: EditIcon,
   history: HistoryIcon,
+  settings: SettingsIcon,
   visibility: VisibilityIcon,
   visibilityOff: VisibilityOffIcon,
   add: AddIcon,

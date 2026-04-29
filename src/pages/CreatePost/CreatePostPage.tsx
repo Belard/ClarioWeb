@@ -1,10 +1,18 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/Icon/Icon';
-import { ApiTimeoutError, postService } from '@/services';
+import { ApiTimeoutError, postService, settingsStorage } from '@/services';
+import type { PostDefaults } from '@/types';
 import { borderRadius, colors, shadows, spacing, typography } from '@/theme';
 
 const MAX_FILES = 5;
+
+const FALLBACK_DEFAULTS: PostDefaults = {
+  post_type: 'normal',
+  privacy_level: 'public',
+  is_sponsored: false,
+  platforms: ['instagram'],
+};
 
 const PLATFORM_OPTIONS = [
   { id: 'facebook', label: 'Facebook', icon: 'facebook' },
@@ -24,6 +32,7 @@ export function CreatePostPage() {
   const [content, setContent] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showPlatformPicker, setShowPlatformPicker] = useState(false);
+  const [postDefaults, setPostDefaults] = useState<PostDefaults>(FALLBACK_DEFAULTS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -49,6 +58,16 @@ export function CreatePostPage() {
       attachmentPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
     };
   }, [attachmentPreviews]);
+
+  useEffect(() => {
+    async function loadDefaults() {
+      const defaults = await settingsStorage.loadPostDefaults();
+      setPostDefaults(defaults);
+      setSelectedPlatforms(defaults.platforms as PlatformOption['id'][]);
+    }
+
+    void loadDefaults();
+  }, []);
 
   const availablePlatformItems = useMemo(
     () => PLATFORM_OPTIONS.filter((option) => !selectedPlatforms.includes(option.id)),
@@ -152,9 +171,9 @@ export function CreatePostPage() {
       await postService.createPost({
         content: content.trim(),
         platforms: selectedPlatforms,
-        post_type: 'normal',
-        privacy_level: 'public',
-        is_sponsored: false,
+        post_type: postDefaults.post_type,
+        privacy_level: postDefaults.privacy_level,
+        is_sponsored: postDefaults.is_sponsored,
         media_ids: uploadedMediaIds,
       });
 

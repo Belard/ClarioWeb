@@ -3,15 +3,72 @@
     "nav": {
       "dashboard": "Painel",
       "createPost": "Criar Post",
-      "history": "Histórico"
+      "history": "Histórico",
+      "settings": "Definições"
     },
     "platforms": "Plataformas",
+    "openSettings": "Abrir definições",
     "action": {
       "createPost": "Criar Post"
     }
   },
   "header": {
     "defaultSubtitle": "Odontopediatra"
+  },
+  "settings": {
+    "title": "Definições",
+    "subtitle": "Gira ligações, valores por defeito de publicação e informação da conta.",
+    "common": {
+      "loading": "A carregar..."
+    },
+    "platforms": {
+      "title": "Ligações de Plataformas",
+      "description": "Liga ou desliga redes sociais usadas na publicação.",
+      "connected": "Ligada",
+      "disconnected": "Desligada",
+      "connect": "Ligar",
+      "disconnect": "Desligar",
+      "expiresAt": "Expira: {{value}}",
+      "loadError": "Não foi possível carregar o estado das plataformas.",
+      "disconnectError": "Não foi possível desligar esta plataforma.",
+      "items": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "twitter": "Twitter",
+        "youtube": "YouTube"
+      }
+    },
+    "defaults": {
+      "title": "Padrões de Publicação",
+      "description": "Define os valores por defeito usados na criação de posts.",
+      "postType": "Tipo de post por defeito",
+      "privacy": "Privacidade por defeito",
+      "sponsored": "Marcar posts como patrocinados por defeito",
+      "platforms": "Plataformas por defeito",
+      "save": "Guardar padrões",
+      "saving": "A guardar...",
+      "saved": "Padrões guardados.",
+      "loadError": "Não foi possível carregar os padrões guardados.",
+      "saveError": "Não foi possível guardar os padrões.",
+      "types": {
+        "normal": "Normal",
+        "short": "Curto",
+        "story": "Story"
+      },
+      "privacyOptions": {
+        "public": "Público",
+        "followers": "Seguidores",
+        "friends": "Amigos",
+        "private": "Privado"
+      }
+    },
+    "account": {
+      "title": "Conta",
+      "description": "Detalhes de perfil atualmente disponíveis na sessão autenticada.",
+      "name": "Nome",
+      "email": "Email"
+    }
   },
   "createPost": {
     "title": "Criar Novo Post",

@@ -63,3 +63,37 @@ export interface UploadedMedia {
   id: string;
   filename?: string;
 }
+
+export type OAuthPlatform = 'facebook' | 'instagram' | 'tiktok' | 'twitter' | 'youtube';
+
+export type PublishPlatform = 'facebook' | 'instagram' | 'youtube' | 'tiktok';
+
+export interface CredentialsStatusItem {
+  platform: OAuthPlatform;
+  connected?: boolean;
+  expires_at?: string;
+}
+
+export interface CredentialsStatusResponse {
+  platforms?: string[];
+  connected_platforms?: string[];
+  credentials?: CredentialsStatusItem[];
+}
+
+export interface SaveCredentialsRequest {
+  platform: OAuthPlatform;
+  access_token: string;
+  refresh_token?: string;
+  expires_at?: string;
+}
+
+export interface DisconnectPlatformRequest {
+  platform: OAuthPlatform;
+}
+
+export interface PostDefaults {
+  post_type: PostType;
+  privacy_level: PrivacyLevel;
+  is_sponsored: boolean;
+  platforms: PublishPlatform[];
+}
