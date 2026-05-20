@@ -5,3 +5,4 @@
  *   export { formatDate } from './formatDate';
  *   export { cn } from './cn';
  */
+export { openCenteredPopup } from "./openCenteredPopup";

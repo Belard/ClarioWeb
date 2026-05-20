@@ -137,8 +137,14 @@ export function SettingsPage() {
 
   const defaultsReady = useMemo(() => defaults ?? null, [defaults]);
 
-  function connectPlatform(platform: OAuthPlatform) {
-    oauthService.startOAuth(platform);
+  async function connectPlatform(platform: OAuthPlatform) {
+    setPlatformError("");
+
+    try {
+      await oauthService.startOAuth(platform);
+    } catch {
+      setPlatformError("Deu erro ao iniciar a conexão. Tente novamente. FDP");
+    }
   }
 
   async function disconnectPlatform(platform: OAuthPlatform) {
@@ -265,7 +271,7 @@ export function SettingsPage() {
                   <button
                     type="button"
                     style={styles.secondaryButton}
-                    onClick={() => connectPlatform(platform.id)}
+                    onClick={() => void connectPlatform(platform.id)}
                   >
                     {t("settings.platforms.connect")}
                   </button>
