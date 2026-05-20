@@ -8,6 +8,11 @@
 const TOKEN_KEY = 'clario_auth_token';
 const DEFAULT_REQUEST_TIMEOUT_MS = 15000;
 
+type UnauthorizedHandler = () => void | Promise<void>;
+
+let unauthorizedHandler: UnauthorizedHandler | null = null;
+let unauthorizedInFlight: Promise<void> | null = null;
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function getToken(): string | null {
@@ -20,6 +25,61 @@ export function setToken(token: string): void {
 
 export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY);
+}
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
+  unauthorizedHandler = handler;
+}
+
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) {
+      return null;
+    }
+
+    const payloadBase64Url = parts[1];
+    const payloadBase64 = payloadBase64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const padding = payloadBase64.length % 4;
+    const normalizedPayload =
+      padding === 0 ? payloadBase64 : payloadBase64 + '='.repeat(4 - padding);
+    const decodedPayload = atob(normalizedPayload);
+
+    return JSON.parse(decodedPayload) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function isTokenExpired(token: string): boolean {
+  const payload = decodeJwtPayload(token);
+  if (!payload) {
+    return true;
+  }
+
+  const exp = payload['exp'];
+  if (typeof exp !== 'number') {
+    return true;
+  }
+
+  return exp * 1000 <= Date.now();
+}
+
+async function triggerUnauthorized(): Promise<void> {
+  if (!unauthorizedHandler) {
+    return;
+  }
+
+  if (!unauthorizedInFlight) {
+    unauthorizedInFlight = Promise.resolve()
+      .then(() => unauthorizedHandler?.())
+      .catch(() => undefined)
+      .finally(() => {
+        unauthorizedInFlight = null;
+      });
+  }
+
+  await unauthorizedInFlight;
 }
 
 // ── API error class ──────────────────────────────────────────────────────────
@@ -76,6 +136,12 @@ export async function request<T = unknown>(
   if (!isPublic) {
     const token = getToken();
     if (token) {
+      if (isTokenExpired(token)) {
+        clearToken();
+        await triggerUnauthorized();
+        throw new ApiError('Session expired.', 401);
+      }
+
       reqHeaders['Authorization'] = `Bearer ${token}`;
     }
   }
@@ -116,7 +182,14 @@ export async function request<T = unknown>(
       (data as Record<string, unknown> | undefined)?.error ??
       (data as Record<string, unknown> | undefined)?.message ??
       res.statusText;
-    throw new ApiError(String(msg), res.status);
+    const error = new ApiError(String(msg), res.status);
+
+    if (error.status === 401 && !isPublic) {
+      clearToken();
+      await triggerUnauthorized();
+    }
+
+    throw error;
   }
 
   return data as T;

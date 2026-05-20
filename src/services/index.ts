@@ -13,4 +13,5 @@ export {
   request,
   setToken,
   clearToken,
+  setUnauthorizedHandler,
 } from "./api";

@@ -14,7 +14,7 @@
  */
 import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { User } from '@/types';
-import { authService, clearToken } from '@/services';
+import { authService, clearToken, setUnauthorizedHandler } from '@/services';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -117,6 +117,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearToken();
     setUser(null);
   }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(async () => {
+      logout();
+    });
+
+    return () => {
+      setUnauthorizedHandler(null);
+    };
+  }, [logout]);
 
   return (
     <AuthContext.Provider
