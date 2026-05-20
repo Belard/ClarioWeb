@@ -6,3 +6,4 @@
  *   export { cn } from './cn';
  */
 export { openCenteredPopup } from "./openCenteredPopup";
+export { formatDateTime } from "./formatDateTime";

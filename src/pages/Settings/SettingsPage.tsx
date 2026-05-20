@@ -14,10 +14,12 @@ import type {
   PrivacyLevel,
   PublishPlatform,
 } from "@/types";
+import { formatDateTime } from "@/utils";
 
 type PlatformState = {
   id: OAuthPlatform;
   connected: boolean;
+  isExpired: boolean;
   expiresAt?: string;
 };
 
@@ -63,34 +65,56 @@ const PRIVACY_OPTIONS: PrivacyLevel[] = [
 function normalizePlatformStatus(
   response: CredentialsStatusResponse,
 ): PlatformState[] {
-  const connectedFromArray = new Set(
-    response.connected_platforms ?? response.platforms ?? [],
-  );
-  const credentialsByPlatform = new Map<string, CredentialsStatusItem>(
-    (response.credentials ?? []).map((item) => [item.platform, item]),
-  );
+  const platformsFromResponse = response.platforms ?? [];
+
+  const connectedFromArray = new Set<string>([
+    ...(response.connected_platforms ?? []),
+    ...platformsFromResponse.filter(
+      (item): item is string => typeof item === "string",
+    ),
+  ]);
+
+  const statusItems: CredentialsStatusItem[] = [
+    ...(response.credentials ?? []),
+    ...platformsFromResponse.filter(
+      (item): item is CredentialsStatusItem =>
+        typeof item === "object" && item !== null && "platform" in item,
+    ),
+  ];
+
+  const statusByPlatform = new Map<string, CredentialsStatusItem>();
+  statusItems.forEach((item) => {
+    statusByPlatform.set(item.platform, item);
+  });
 
   return OAUTH_PLATFORMS.map((platform) => {
-    const credentialStatus = credentialsByPlatform.get(platform.id);
+    const credentialStatus = statusByPlatform.get(platform.id);
+    const expiresAt = credentialStatus?.expires_at;
+    const isExpiredByDate =
+      Boolean(expiresAt) && new Date(expiresAt as string).getTime() <= Date.now();
+    const isExpired = Boolean(credentialStatus?.is_expired) || isExpiredByDate;
     const connected =
-      Boolean(credentialStatus?.connected) ||
-      connectedFromArray.has(platform.id) ||
-      credentialsByPlatform.has(platform.id);
+      Boolean(credentialStatus?.connected) || connectedFromArray.has(platform.id);
 
     return {
       id: platform.id,
       connected,
-      expiresAt: credentialStatus?.expires_at,
+      isExpired,
+      expiresAt,
     };
   });
 }
 
 export function SettingsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const [platforms, setPlatforms] = useState<PlatformState[]>(() =>
-    OAUTH_PLATFORMS.map((platform) => ({ id: platform.id, connected: false })),
+    OAUTH_PLATFORMS.map((platform) => ({
+      id: platform.id,
+      connected: false,
+      isExpired: false,
+    })),
   );
   const [isLoadingPlatforms, setIsLoadingPlatforms] = useState(true);
   const [platformError, setPlatformError] = useState("");
@@ -143,7 +167,7 @@ export function SettingsPage() {
     try {
       await oauthService.startOAuth(platform);
     } catch {
-      setPlatformError("Deu erro ao iniciar a conexão. Tente novamente. FDP");
+      setPlatformError(t("settings.platforms.connectError"));
     }
   }
 
@@ -233,6 +257,12 @@ export function SettingsPage() {
               (item) => item.id === platform.id,
             );
             const isDisconnecting = disconnectingPlatform === platform.id;
+            const isHealthyConnected = platform.connected && !platform.isExpired;
+            const statusLabel = platform.isExpired
+              ? t("settings.platforms.expired")
+              : platform.connected
+                ? t("settings.platforms.connected")
+                : t("settings.platforms.disconnected");
 
             return (
               <article key={platform.id} style={styles.platformCard}>
@@ -248,32 +278,44 @@ export function SettingsPage() {
                   <span
                     style={{
                       ...styles.statusBadge,
-                      ...(platform.connected
-                        ? styles.statusConnected
-                        : styles.statusDisconnected),
+                      ...(platform.isExpired
+                        ? styles.statusExpired
+                        : platform.connected
+                          ? styles.statusConnected
+                          : styles.statusDisconnected),
                     }}
                   >
-                    {platform.connected
-                      ? t("settings.platforms.connected")
-                      : t("settings.platforms.disconnected")}
+                    {statusLabel}
                   </span>
                 </div>
+
+                {platform.isExpired ? (
+                  <p style={styles.warningText}>
+                    {t("settings.platforms.reconnectRequired")}
+                  </p>
+                ) : null}
 
                 {platform.expiresAt ? (
                   <p style={styles.expiryText}>
                     {t("settings.platforms.expiresAt", {
-                      value: platform.expiresAt,
+                      value: formatDateTime(platform.expiresAt, i18n.language),
                     })}
                   </p>
                 ) : null}
 
-                <div style={styles.actionsRow}>
+                <div style={styles.platformActionsRow}>
                   <button
                     type="button"
-                    style={styles.secondaryButton}
+                    style={{
+                      ...styles.secondaryButton,
+                      ...(isHealthyConnected ? styles.buttonDisabled : {}),
+                    }}
                     onClick={() => void connectPlatform(platform.id)}
+                    disabled={isHealthyConnected}
                   >
-                    {t("settings.platforms.connect")}
+                    {platform.isExpired
+                      ? t("settings.platforms.reconnect")
+                      : t("settings.platforms.connect")}
                   </button>
 
                   <button
@@ -475,6 +517,12 @@ const styles: Record<string, CSSProperties> = {
     color: colors.error.default,
     fontSize: typography.fontSize.sm,
   },
+  warningText: {
+    margin: 0,
+    color: colors.warning.default,
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
+  },
   platformGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
@@ -519,6 +567,10 @@ const styles: Record<string, CSSProperties> = {
     color: colors.neutral[80],
     backgroundColor: colors.neutral[30],
   },
+  statusExpired: {
+    color: colors.warning.dark,
+    backgroundColor: colors.warning.light,
+  },
   expiryText: {
     margin: 0,
     color: colors.neutral[80],
@@ -529,6 +581,13 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     gap: spacing[2],
     flexWrap: "wrap",
+  },
+  platformActionsRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: spacing[2],
+    flexWrap: "wrap",
+    marginTop: "auto",
   },
   primaryButton: {
     border: `1px solid ${colors.primary[500]}`,

@@ -29,4 +29,13 @@ export async function startOAuth(platform: OAuthPlatform): Promise<void> {
   }
 
   popup.focus();
+
+  const popupClosePoll = window.setInterval(() => {
+    if (!popup.closed) {
+      return;
+    }
+
+    window.clearInterval(popupClosePoll);
+    window.location.reload();
+  }, 500);
 }

@@ -74,13 +74,15 @@ export type OAuthPlatform =
 export type PublishPlatform = "facebook" | "instagram" | "youtube" | "tiktok";
 
 export interface CredentialsStatusItem {
-  platform: OAuthPlatform;
+  platform: OAuthPlatform | string;
   connected?: boolean;
+  created_at?: string;
   expires_at?: string;
+  is_expired?: boolean;
 }
 
 export interface CredentialsStatusResponse {
-  platforms?: string[];
+  platforms?: Array<CredentialsStatusItem | string>;
   connected_platforms?: string[];
   credentials?: CredentialsStatusItem[];
 }
