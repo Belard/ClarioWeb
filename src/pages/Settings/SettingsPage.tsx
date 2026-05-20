@@ -107,7 +107,7 @@ function normalizePlatformStatus(
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const [platforms, setPlatforms] = useState<PlatformState[]>(() =>
     OAUTH_PLATFORMS.map((platform) => ({
@@ -461,6 +461,16 @@ export function SettingsPage() {
             <dd style={styles.accountValue}>{user?.email ?? "-"}</dd>
           </div>
         </dl>
+
+        <div style={styles.actionsRow}>
+          <button
+            type="button"
+            style={styles.dangerButton}
+            onClick={logout}
+          >
+            {t("settings.account.logout")}
+          </button>
+        </div>
       </section>
     </div>
   );

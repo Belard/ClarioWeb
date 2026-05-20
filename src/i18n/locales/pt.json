@@ -71,7 +71,8 @@
       "title": "Conta",
       "description": "Detalhes de perfil atualmente disponíveis na sessão autenticada.",
       "name": "Nome",
-      "email": "Email"
+      "email": "Email",
+      "logout": "Terminar sessão"
     }
   },
   "createPost": {

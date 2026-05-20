@@ -71,7 +71,8 @@
       "title": "Account",
       "description": "Profile details currently available from your authenticated session.",
       "name": "Name",
-      "email": "Email"
+      "email": "Email",
+      "logout": "Log out"
     }
   },
   "createPost": {
